@@ -1,0 +1,217 @@
+Model,Seed,Trained on,Test,macro_f1,detection,false_positive,Train time (s),Epochs
+RF (window),0,lab only,lab,100.0,100.0,0.0,0.67,
+RF (window),0,lab only,cicids2017,43.97,0.29,1.03,0.67,
+RF (window),0,lab only,cicddos2019,81.73,87.57,0.0,0.67,
+RF (window),0,cicids2017 only,lab,87.09,77.13,3.29,0.58,
+RF (window),0,cicids2017 only,cicids2017,100.0,100.0,0.0,0.58,
+RF (window),0,cicids2017 only,cicddos2019,46.3,42.01,0.0,0.58,
+RF (window),0,cicddos2019 only,lab,79.37,67.21,6.27,0.46,
+RF (window),0,cicddos2019 only,cicids2017,94.62,98.29,4.42,0.46,
+RF (window),0,cicddos2019 only,cicddos2019,98.19,99.05,0.0,0.46,
+RF (window),0,all datasets,lab,99.81,100.0,0.1,2.63,
+RF (window),0,all datasets,cicids2017,99.91,99.71,0.0,2.63,
+RF (window),0,all datasets,cicddos2019,95.85,97.75,0.0,2.63,
+RF (window),1,lab only,lab,100.0,100.0,0.0,0.69,
+RF (window),1,lab only,cicids2017,43.97,0.29,1.03,0.69,
+RF (window),1,lab only,cicddos2019,84.37,89.82,0.0,0.69,
+RF (window),1,cicids2017 only,lab,79.66,46.6,0.11,0.58,
+RF (window),1,cicids2017 only,cicids2017,99.45,98.29,0.0,0.58,
+RF (window),1,cicids2017 only,cicddos2019,20.15,8.76,0.0,0.58,
+RF (window),1,cicddos2019 only,lab,75.5,43.69,1.86,0.62,
+RF (window),1,cicddos2019 only,cicids2017,44.35,1.71,4.5,0.62,
+RF (window),1,cicddos2019 only,cicddos2019,97.3,98.7,0.81,0.62,
+RF (window),1,all datasets,lab,99.94,100.0,0.03,1.01,
+RF (window),1,all datasets,cicids2017,99.45,98.29,0.0,1.01,
+RF (window),1,all datasets,cicddos2019,96.05,97.87,0.0,1.01,
+RF (window),2,lab only,lab,100.0,100.0,0.0,0.81,
+RF (window),2,lab only,cicids2017,44.15,0.29,0.32,0.81,
+RF (window),2,lab only,cicddos2019,84.08,89.59,0.0,0.81,
+RF (window),2,cicids2017 only,lab,77.16,52.64,3.62,0.58,
+RF (window),2,cicids2017 only,cicids2017,100.0,100.0,0.0,0.58,
+RF (window),2,cicids2017 only,cicddos2019,20.26,8.88,0.0,0.58,
+RF (window),2,cicddos2019 only,lab,83.32,66.88,3.34,0.44,
+RF (window),2,cicddos2019 only,cicids2017,43.36,0.57,4.34,0.44,
+RF (window),2,cicddos2019 only,cicddos2019,96.89,98.34,0.0,0.44,
+RF (window),2,all datasets,lab,99.97,100.0,0.02,2.65,
+RF (window),2,all datasets,cicids2017,99.91,99.71,0.0,2.65,
+RF (window),2,all datasets,cicddos2019,95.24,97.4,0.0,2.65,
+HGB (window),0,lab only,lab,100.0,100.0,0.0,3.08,
+HGB (window),0,lab only,cicids2017,74.42,39.43,0.0,3.08,
+HGB (window),0,lab only,cicddos2019,89.28,94.2,3.25,3.08,
+HGB (window),0,cicids2017 only,lab,79.42,45.74,0.0,2.14,
+HGB (window),0,cicids2017 only,cicids2017,99.91,99.71,0.0,2.14,
+HGB (window),0,cicids2017 only,cicddos2019,20.15,8.76,0.0,2.14,
+HGB (window),0,cicddos2019 only,lab,62.34,43.8,14.5,2.23,
+HGB (window),0,cicddos2019 only,cicids2017,42.84,0.0,4.34,2.23,
+HGB (window),0,cicddos2019 only,cicddos2019,98.63,99.29,0.0,2.23,
+HGB (window),0,all datasets,lab,99.81,100.0,0.1,3.71,
+HGB (window),0,all datasets,cicids2017,99.91,99.71,0.0,3.71,
+HGB (window),0,all datasets,cicddos2019,96.05,97.87,0.0,3.71,
+HGB (window),1,lab only,lab,100.0,100.0,0.0,3.01,
+HGB (window),1,lab only,cicids2017,43.16,0.0,3.08,3.01,
+HGB (window),1,lab only,cicddos2019,86.24,91.83,2.44,3.01,
+HGB (window),1,cicids2017 only,lab,88.6,67.21,0.21,1.21,
+HGB (window),1,cicids2017 only,cicids2017,99.45,98.29,0.0,1.21,
+HGB (window),1,cicids2017 only,cicddos2019,93.66,96.45,0.0,1.21,
+HGB (window),1,cicddos2019 only,lab,45.61,0.0,3.49,2.0,
+HGB (window),1,cicddos2019 only,cicids2017,42.8,0.0,4.5,2.0,
+HGB (window),1,cicddos2019 only,cicddos2019,97.28,98.82,1.63,2.0,
+HGB (window),1,all datasets,lab,100.0,100.0,0.0,3.67,
+HGB (window),1,all datasets,cicids2017,99.45,98.29,0.0,3.67,
+HGB (window),1,all datasets,cicddos2019,97.32,98.58,0.0,3.67,
+HGB (window),2,lab only,lab,100.0,100.0,0.0,3.06,
+HGB (window),2,lab only,cicids2017,84.95,67.71,3.08,3.06,
+HGB (window),2,lab only,cicddos2019,89.69,93.85,0.0,3.06,
+HGB (window),2,cicids2017 only,lab,79.42,45.74,0.0,2.08,
+HGB (window),2,cicids2017 only,cicids2017,99.91,99.71,0.0,2.08,
+HGB (window),2,cicids2017 only,cicddos2019,20.15,8.76,0.0,2.08,
+HGB (window),2,cicddos2019 only,lab,79.01,100.0,15.33,1.68,
+HGB (window),2,cicddos2019 only,cicids2017,42.84,0.0,4.34,1.68,
+HGB (window),2,cicddos2019 only,cicddos2019,98.41,99.17,0.0,1.68,
+HGB (window),2,all datasets,lab,99.94,100.0,0.03,3.71,
+HGB (window),2,all datasets,cicids2017,99.91,99.71,0.0,3.71,
+HGB (window),2,all datasets,cicddos2019,96.47,98.11,0.0,3.71,
+RF (sequence),0,lab only,lab,100.0,100.0,0.0,1.37,
+RF (sequence),0,lab only,cicids2017,51.25,7.43,0.0,1.37,
+RF (sequence),0,lab only,cicddos2019,67.78,72.54,0.0,1.37,
+RF (sequence),0,cicids2017 only,lab,47.11,60.52,45.43,0.67,
+RF (sequence),0,cicids2017 only,cicids2017,99.55,99.71,0.32,0.67,
+RF (sequence),0,cicids2017 only,cicddos2019,19.86,8.76,2.44,0.67,
+RF (sequence),0,cicddos2019 only,lab,90.8,100.0,5.56,0.57,
+RF (sequence),0,cicddos2019 only,cicids2017,53.62,12.57,3.79,0.57,
+RF (sequence),0,cicddos2019 only,cicddos2019,95.61,97.75,0.81,0.57,
+RF (sequence),0,all datasets,lab,100.0,100.0,0.0,4.13,
+RF (sequence),0,all datasets,cicids2017,99.64,99.43,0.16,4.13,
+RF (sequence),0,all datasets,cicddos2019,95.85,97.75,0.0,4.13,
+RF (sequence),1,lab only,lab,100.0,100.0,0.0,1.31,
+RF (sequence),1,lab only,cicids2017,50.72,6.86,0.0,1.31,
+RF (sequence),1,lab only,cicddos2019,65.67,69.82,0.0,1.31,
+RF (sequence),1,cicids2017 only,lab,52.98,36.25,24.41,0.63,
+RF (sequence),1,cicids2017 only,cicids2017,98.99,98.0,0.32,0.63,
+RF (sequence),1,cicids2017 only,cicddos2019,20.05,8.76,0.81,0.63,
+RF (sequence),1,cicddos2019 only,lab,90.71,100.0,5.62,0.56,
+RF (sequence),1,cicddos2019 only,cicids2017,63.8,27.43,3.95,0.56,
+RF (sequence),1,cicddos2019 only,cicddos2019,95.18,97.63,1.63,0.56,
+RF (sequence),1,all datasets,lab,100.0,100.0,0.0,3.87,
+RF (sequence),1,all datasets,cicids2017,98.9,97.14,0.16,3.87,
+RF (sequence),1,all datasets,cicddos2019,96.05,97.87,0.0,3.87,
+RF (sequence),2,lab only,lab,100.0,100.0,0.0,1.24,
+RF (sequence),2,lab only,cicids2017,50.29,7.43,2.05,1.24,
+RF (sequence),2,lab only,cicddos2019,32.94,23.67,0.0,1.24,
+RF (sequence),2,cicids2017 only,lab,45.88,50.92,43.83,0.77,
+RF (sequence),2,cicids2017 only,cicids2017,99.46,99.71,0.39,0.77,
+RF (sequence),2,cicids2017 only,cicddos2019,19.97,8.88,2.44,0.77,
+RF (sequence),2,cicddos2019 only,lab,70.31,42.61,5.51,0.55,
+RF (sequence),2,cicddos2019 only,cicids2017,42.98,0.0,3.79,0.55,
+RF (sequence),2,cicddos2019 only,cicddos2019,83.58,89.35,0.81,0.55,
+RF (sequence),2,all datasets,lab,100.0,100.0,0.0,4.1,
+RF (sequence),2,all datasets,cicids2017,99.54,99.43,0.24,4.1,
+RF (sequence),2,all datasets,cicddos2019,96.05,97.87,0.0,4.1,
+CNN,0,lab only,lab,100.0,100.0,0.0,6.44,6.0
+CNN,0,lab only,cicids2017,47.43,3.43,0.0,6.44,6.0
+CNN,0,lab only,cicddos2019,30.78,20.95,0.0,6.44,6.0
+CNN,0,cicids2017 only,lab,71.69,38.08,2.56,3.67,13.0
+CNN,0,cicids2017 only,cicids2017,100.0,100.0,0.0,3.67,13.0
+CNN,0,cicids2017 only,cicddos2019,16.13,4.73,0.81,3.67,13.0
+CNN,0,cicddos2019 only,lab,84.96,68.93,2.77,1.2,9.0
+CNN,0,cicddos2019 only,cicids2017,43.93,0.0,0.0,1.2,9.0
+CNN,0,cicddos2019 only,cicddos2019,98.86,99.41,0.0,1.2,9.0
+CNN,0,all datasets,lab,100.0,100.0,0.0,7.47,6.0
+CNN,0,all datasets,cicids2017,99.91,99.71,0.0,7.47,6.0
+CNN,0,all datasets,cicddos2019,96.87,98.46,0.81,7.47,6.0
+CNN,1,lab only,lab,99.97,100.0,0.02,4.71,6.0
+CNN,1,lab only,cicids2017,46.86,2.86,0.0,4.71,6.0
+CNN,1,lab only,cicddos2019,69.59,74.79,0.0,4.71,6.0
+CNN,1,cicids2017 only,lab,77.41,41.96,0.03,3.38,14.0
+CNN,1,cicids2017 only,cicids2017,100.0,100.0,0.0,3.38,14.0
+CNN,1,cicids2017 only,cicddos2019,14.24,2.96,1.63,3.38,14.0
+CNN,1,cicddos2019 only,lab,79.82,87.59,11.39,1.06,9.0
+CNN,1,cicddos2019 only,cicids2017,44.21,0.29,0.08,1.06,9.0
+CNN,1,cicddos2019 only,cicddos2019,99.08,99.53,0.0,1.06,9.0
+CNN,1,all datasets,lab,99.81,100.0,0.1,7.6,6.0
+CNN,1,all datasets,cicids2017,99.54,99.43,0.24,7.6,6.0
+CNN,1,all datasets,cicddos2019,99.3,99.76,0.81,7.6,6.0
+CNN,2,lab only,lab,99.97,100.0,0.02,4.75,6.0
+CNN,2,lab only,cicids2017,47.43,3.43,0.0,4.75,6.0
+CNN,2,lab only,cicddos2019,66.3,70.65,0.0,4.75,6.0
+CNN,2,cicids2017 only,lab,80.09,47.14,0.02,2.51,9.0
+CNN,2,cicids2017 only,cicids2017,99.82,100.0,0.16,2.51,9.0
+CNN,2,cicids2017 only,cicddos2019,19.96,8.76,1.63,2.51,9.0
+CNN,2,cicddos2019 only,lab,48.13,63.75,44.92,0.58,5.0
+CNN,2,cicddos2019 only,cicids2017,91.2,96.29,7.18,0.58,5.0
+CNN,2,cicddos2019 only,cicddos2019,82.27,96.09,33.33,0.58,5.0
+CNN,2,all datasets,lab,100.0,100.0,0.0,8.65,7.0
+CNN,2,all datasets,cicids2017,99.91,99.71,0.0,8.65,7.0
+CNN,2,all datasets,cicddos2019,97.53,98.7,0.0,8.65,7.0
+LSTM,0,lab only,lab,100.0,100.0,0.0,31.93,9.0
+LSTM,0,lab only,cicids2017,48.55,4.57,0.0,31.93,9.0
+LSTM,0,lab only,cicddos2019,84.95,90.3,0.0,31.93,9.0
+LSTM,0,cicids2017 only,lab,60.7,15.86,0.0,12.05,10.0
+LSTM,0,cicids2017 only,cicids2017,93.8,82.86,0.32,12.05,10.0
+LSTM,0,cicids2017 only,cicddos2019,11.11,0.0,1.63,12.05,10.0
+LSTM,0,cicddos2019 only,lab,87.9,75.62,2.44,8.28,11.0
+LSTM,0,cicddos2019 only,cicids2017,47.43,3.43,0.0,8.28,11.0
+LSTM,0,cicddos2019 only,cicddos2019,97.53,98.7,0.0,8.28,11.0
+LSTM,0,all datasets,lab,100.0,100.0,0.0,40.44,8.0
+LSTM,0,all datasets,cicids2017,98.99,98.0,0.32,40.44,8.0
+LSTM,0,all datasets,cicddos2019,89.86,94.44,2.44,40.44,8.0
+LSTM,1,lab only,lab,100.0,100.0,0.0,29.75,10.0
+LSTM,1,lab only,cicids2017,50.18,6.29,0.0,29.75,10.0
+LSTM,1,lab only,cicddos2019,39.24,32.19,0.81,29.75,10.0
+LSTM,1,cicids2017 only,lab,81.54,50.05,0.0,6.24,7.0
+LSTM,1,cicids2017 only,cicids2017,97.87,94.57,0.32,6.24,7.0
+LSTM,1,cicids2017 only,cicddos2019,18.83,7.57,1.63,6.24,7.0
+LSTM,1,cicddos2019 only,lab,73.83,40.56,1.92,6.25,10.0
+LSTM,1,cicddos2019 only,cicids2017,43.93,0.0,0.0,6.25,10.0
+LSTM,1,cicddos2019 only,cicddos2019,92.71,95.86,0.0,6.25,10.0
+LSTM,1,all datasets,lab,100.0,100.0,0.0,133.49,29.0
+LSTM,1,all datasets,cicids2017,99.18,98.57,0.32,133.49,29.0
+LSTM,1,all datasets,cicddos2019,96.83,98.7,2.44,133.49,29.0
+LSTM,2,lab only,lab,99.88,99.57,0.0,26.7,9.0
+LSTM,2,lab only,cicids2017,43.93,0.0,0.0,26.7,9.0
+LSTM,2,lab only,cicddos2019,17.52,6.04,0.0,26.7,9.0
+LSTM,2,cicids2017 only,lab,86.71,61.6,0.0,6.57,6.0
+LSTM,2,cicids2017 only,cicids2017,98.9,97.71,0.32,6.57,6.0
+LSTM,2,cicids2017 only,cicddos2019,19.96,8.76,1.63,6.57,6.0
+LSTM,2,cicddos2019 only,lab,57.48,64.08,30.13,5.0,8.0
+LSTM,2,cicddos2019 only,cicids2017,42.41,0.0,6.0,5.0,8.0
+LSTM,2,cicddos2019 only,cicddos2019,78.72,92.19,28.46,5.0,8.0
+LSTM,2,all datasets,lab,100.0,100.0,0.0,78.74,17.0
+LSTM,2,all datasets,cicids2017,99.63,99.14,0.08,78.74,17.0
+LSTM,2,all datasets,cicddos2019,95.38,97.75,1.63,78.74,17.0
+Transformer,0,lab only,lab,100.0,100.0,0.0,50.67,5.0
+Transformer,0,lab only,cicids2017,47.43,3.43,0.0,50.67,5.0
+Transformer,0,lab only,cicddos2019,20.59,9.23,0.0,50.67,5.0
+Transformer,0,cicids2017 only,lab,83.27,53.94,0.05,30.67,9.0
+Transformer,0,cicids2017 only,cicids2017,99.82,100.0,0.16,30.67,9.0
+Transformer,0,cicids2017 only,cicddos2019,19.57,8.76,4.88,30.67,9.0
+Transformer,0,cicddos2019 only,lab,65.87,92.66,28.3,9.13,6.0
+Transformer,0,cicddos2019 only,cicids2017,44.83,0.86,0.0,9.13,6.0
+Transformer,0,cicddos2019 only,cicddos2019,99.08,99.64,0.81,9.13,6.0
+Transformer,0,all datasets,lab,100.0,100.0,0.0,123.28,8.0
+Transformer,0,all datasets,cicids2017,100.0,100.0,0.0,123.28,8.0
+Transformer,0,all datasets,cicddos2019,96.47,98.11,0.0,123.28,8.0
+Transformer,1,lab only,lab,100.0,100.0,0.0,49.96,5.0
+Transformer,1,lab only,cicids2017,44.53,0.57,0.0,49.96,5.0
+Transformer,1,lab only,cicddos2019,20.26,8.88,0.0,49.96,5.0
+Transformer,1,cicids2017 only,lab,93.91,100.0,3.5,23.54,8.0
+Transformer,1,cicids2017 only,cicids2017,99.73,99.71,0.16,23.54,8.0
+Transformer,1,cicids2017 only,cicddos2019,23.23,12.43,2.44,23.54,8.0
+Transformer,1,cicddos2019 only,lab,65.16,86.84,27.41,7.36,6.0
+Transformer,1,cicddos2019 only,cicids2017,44.53,0.57,0.0,7.36,6.0
+Transformer,1,cicddos2019 only,cicddos2019,99.08,99.53,0.0,7.36,6.0
+Transformer,1,all datasets,lab,99.97,100.0,0.02,73.77,5.0
+Transformer,1,all datasets,cicids2017,99.27,98.0,0.08,73.77,5.0
+Transformer,1,all datasets,cicddos2019,96.03,97.99,0.81,73.77,5.0
+Transformer,2,lab only,lab,99.97,100.0,0.02,49.68,5.0
+Transformer,2,lab only,cicids2017,50.45,6.57,0.0,49.68,5.0
+Transformer,2,lab only,cicddos2019,21.26,9.94,0.0,49.68,5.0
+Transformer,2,cicids2017 only,lab,80.65,78.86,8.41,19.88,6.0
+Transformer,2,cicids2017 only,cicids2017,99.73,99.71,0.16,19.88,6.0
+Transformer,2,cicids2017 only,cicddos2019,79.91,86.51,2.44,19.88,6.0
+Transformer,2,cicddos2019 only,lab,72.34,42.61,3.81,8.5,7.0
+Transformer,2,cicddos2019 only,cicids2017,43.93,0.0,0.0,8.5,7.0
+Transformer,2,cicddos2019 only,cicddos2019,84.66,90.06,0.0,8.5,7.0
+Transformer,2,all datasets,lab,99.97,100.0,0.02,72.02,5.0
+Transformer,2,all datasets,cicids2017,99.91,99.71,0.0,72.02,5.0
+Transformer,2,all datasets,cicddos2019,96.87,98.46,0.81,72.02,5.0

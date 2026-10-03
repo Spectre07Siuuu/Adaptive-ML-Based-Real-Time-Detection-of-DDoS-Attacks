@@ -11,3 +11,4 @@ models/*.pkl
 
 .pytest_cache/
 models/**/*.joblib
+data/processed/*_sequences.npz

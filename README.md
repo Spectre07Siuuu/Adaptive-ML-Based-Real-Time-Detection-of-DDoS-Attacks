@@ -17,7 +17,7 @@ The code has two pipelines:
 |---|---|---|
 | 0 | Clean data and honest evaluation (prerequisite) | done: 3 lab sessions, baselines in reports/lab |
 | 1 | 02 Cross-dataset eval: lab + CIC-DDoS2019 + CIC-IDS2017 + Kaggle SDN | done: reports/cross_dataset |
-| 2 | 04 DL comparison: 1D-CNN, LSTM, Transformer vs RF/XGBoost | todo |
+| 2 | 04 DL comparison: 1D-CNN, LSTM, Transformer vs RF/XGBoost | done: reports/models |
 | 3 | 03 Real-time closed-loop mitigation (OVS drop flows) | todo |
 | 4 | 01 Adaptive pipeline: drift detection, online learning, novelty detection | todo |
 | 5 | 05 Deployment-ready architecture | todo |
@@ -41,11 +41,15 @@ ddos/                       Python package (run every module from the project ro
     packets.py                IPv4 header parser (Ethernet, SLL, SLL2, raw)
     window.py                 per-peer time-window features, shared with the future live detector
     flows.py                  SDN-style 30 s flow view, to compare with the SDN dataset
+    sequences.py              first 32 packets of each window, the deep models' input
     build_dataset.py          lab sessions -> labelled lab_windows.csv and lab_flows.csv
+    build_sequences.py        every dataset -> <name>_sequences.npz, row-aligned with the windows
     extract_windows.py        v1: pcap -> 100-packet windows -> final_dataset.csv
   training/
     train_baselines.py        v2: RF, KNN, SVM with grouped splits -> reports/lab, models/lab
     cross_dataset.py          v2: train on one/some datasets, test on each -> reports/cross_dataset
+    deep_models.py            v2: 1D-CNN, LSTM, Transformer over packet sequences
+    compare_models.py         v2: deep models vs tree baselines, quality + speed -> reports/models
     train_models.py           v1: RF, KNN, SVM + comparison table + feature importance
     evaluate_rf.py            v1: RF confusion matrix + ROC curves -> reports/figures/
     train_server_model.py     v1: RF on scaled features, the model used by predict_server
@@ -197,6 +201,52 @@ replies to its own outbound requests (DNS, web), unlike the lab's clients callin
 the flow view CIC-IDS2017 has only 40 attack rows (one flow every 30 s). Each CIC dataset has a
 single attacker address. Published papers that report ~99% on these datasets mostly use random
 row splits, which leak between train and test.
+
+## Phase 2: deep learning comparison
+
+The networks read the first 32 packets of each window (`features/sequences.py`): direction,
+size, payload, inter-arrival time, protocol, TCP flags, and whether each side's port is new
+in the window. Ports, TTL and TCP window size are left out; they identify the attack tool
+(hping3, LOIC) more than the attack. Baselines: Random Forest and histogram gradient
+boosting (sklearn's XGBoost-style booster) on the 26 window features, and a Random Forest on
+the networks' own input, flattened. Every model sees the same windows, splits and training
+caps as phase 1. Each model is trained on each dataset alone and on all three, with 3 seeds.
+
+```
+.venv/bin/python -m ddos.features.build_sequences   # ~15 min, most of it CIC-DDoS2019
+.venv/bin/python -m ddos.training.compare_models    # ~18 min on 2 CPU cores
+```
+
+Binary macro-F1 %, mean ± std over 3 seeds:
+
+| Model | Within dataset | Across datasets | Trained on all 3 | Latency, 1 window | Parameters / nodes |
+|---|---|---|---|---|---|
+| RF (window) | 99.1 ± 0.3 | 63.0 ± 8.0 | 98.5 ± 0.1 | 20.0 ms | 5.0k nodes |
+| HGB (window) | **99.3 ± 0.3** | **64.7 ± 2.9** | 98.8 ± 0.2 | 1.2 ms | 6.0k nodes |
+| RF (sequence) | 96.9 ± 2.2 | 52.0 ± 7.3 | 98.5 ± 0.1 | 16.7 ms | 10.1k nodes |
+| 1D-CNN | 97.8 ± 3.3 | 54.5 ± 4.9 | **99.2 ± 0.3** | **0.35 ms** | 17k params |
+| LSTM | 95.5 ± 2.6 | 50.9 ± 6.1 | 97.8 ± 1.3 | 0.50 ms | 21k params |
+| Transformer | 98.0 ± 2.8 | 51.2 ± 6.0 | 98.7 ± 0.3 | 0.86 ms | 70k params |
+
+![Model comparison](reports/models/comparison.png)
+
+- Within a dataset and when trained on all three, every model is at 96–99%; the differences
+  are within a few points and often within one standard deviation.
+- Across datasets every model drops to 51–65%. The networks are not better at transferring
+  than the trees. The boosted trees on window features transfer best and vary least
+  between seeds.
+- Input matters more than architecture: the Random Forest loses 11 points across datasets when
+  given the networks' packet sequences instead of the window features.
+- Per attack type, models disagree on what transfers. Trained on the lab, the window trees
+  catch 94–97% of CIC-DDoS2019's reflection floods; the CNN and LSTM ~50%; the Transformer 0%.
+  No model trained on the lab catches more than 36% of the HTTP flood.
+- Speed: one window at a time, the 1D-CNN takes 0.35 ms and HGB 1.2 ms; sklearn's Random
+  Forest takes 17–20 ms per call, slow for per-second, per-peer scoring. In batches, HGB is
+  fastest (~390k windows/s). The Transformer trains slowest (51 s on the lab vs 6 s for the CNN).
+- For the live detector (phase 3) this points to HGB on window features, with the 1D-CNN as
+  the deep-learning option.
+
+Full per-run results, per-attack detection rates and timings are in `reports/models/`.
 
 ## v1 pipeline
 

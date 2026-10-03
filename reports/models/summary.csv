@@ -1,0 +1,9 @@
+,mean,mean,mean,std,std,std
+kind,across datasets,all datasets,within dataset,across datasets,all datasets,within dataset
+Model,,,,,,
+RF (window),62.97,98.46,99.09,7.99,0.08,0.26
+HGB (window),64.7,98.76,99.29,2.87,0.17,0.33
+RF (sequence),52.04,98.45,96.93,7.29,0.11,2.24
+CNN,54.45,99.21,97.77,4.91,0.32,3.25
+LSTM,50.9,97.76,95.49,6.06,1.29,2.59
+Transformer,51.21,98.72,98.01,6.02,0.26,2.79

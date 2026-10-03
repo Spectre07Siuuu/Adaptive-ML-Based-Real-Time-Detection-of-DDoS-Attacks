@@ -186,3 +186,34 @@ def test_flow_view_per_directed_flow():
     assert (udp["pairflow"], udp["proto_udp"], udp["proto_tcp"], udp["window_start"]) == (1, 1, 0, 0.0)
     assert rows["10.0.0.11"]["pairflow"] == 0 and rows["10.0.0.11"]["proto_tcp"] == 1
     assert [r["window_start"] for r in agg.flush()] == [30.0]
+
+
+# ---------- sequences.py ----------
+
+def test_sequences_match_windows_and_encode_packets():
+    from ddos.features.sequences import SequenceAggregator, PACKET_FEATURES
+    pkts = [P(10.0, "10.0.0.21", VICTIM, flags=SYN, sport=1000, size=40),
+            P(10.0001, VICTIM, "10.0.0.21", flags=SYN | ACK, sport=80, dport=1000, size=44),
+            P(10.0002, "10.0.0.21", VICTIM, flags=SYN, sport=1001, size=40),
+            P(10.5, VICTIM, "10.0.0.99"),                                  # outbound only
+            P(11.2, "10.0.0.11", VICTIM, proto=ICMP, size=84, payload=56)]
+    seq, win = SequenceAggregator([VICTIM], length=4), WindowAggregator([VICTIM])
+    s_rows, w_rows = [], []
+    for p in pkts:
+        s_rows += seq.add(p)
+        w_rows += win.add(p)
+    s_rows += seq.flush()
+    w_rows += win.flush()
+    assert [(r["window_start"], r["peer_ip"]) for r in s_rows] == \
+           [(r["window_start"], r["peer_ip"]) for r in w_rows]
+
+    first = s_rows[0]
+    f = {name: first["seq"][:, i] for i, name in enumerate(PACKET_FEATURES)}
+    assert first["length"] == 3 and first["seq"].shape == (4, len(PACKET_FEATURES))
+    assert list(f["inbound"]) == [1, 0, 1, 0]                            # last row is padding
+    assert list(f["syn"][:3]) == [1, 1, 1] and list(f["ack"][:3]) == [0, 1, 0]
+    assert list(f["peer_port_new"][:3]) == [1, 0, 1]                     # 1000, 1000, 1001
+    assert list(f["server_port_new"][:3]) == [1, 0, 0]                   # 80 every time
+    assert f["iat"][0] == 0 and 0.3 < f["iat"][1] < 0.4                  # 100 us gap, log scale
+    icmp = s_rows[1]["seq"][0]
+    assert icmp[PACKET_FEATURES.index("icmp")] == 1 and icmp[PACKET_FEATURES.index("peer_port_new")] == 0

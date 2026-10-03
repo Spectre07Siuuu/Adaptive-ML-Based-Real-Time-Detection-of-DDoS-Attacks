@@ -1,0 +1,7 @@
+Model,Parameters / tree nodes,Size (KB),"Latency, 1 window (ms)",Throughput (windows/s),"Train time, lab (s)"
+RF (window),4998,544.3,19.991,124725,0.7
+HGB (window),6008,365.0,1.171,388842,3.1
+RF (sequence),10096,943.2,16.676,77732,1.4
+CNN,17217,70.4,0.348,36470,6.4
+LSTM,20545,82.9,0.498,30325,31.9
+Transformer,70017,283.1,0.863,4814,50.7
