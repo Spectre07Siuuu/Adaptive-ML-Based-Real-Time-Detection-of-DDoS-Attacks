@@ -1,0 +1,275 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DDoS Detector</title>
+<style>
+  :root {
+    color-scheme: light;
+    --page: #f9f9f7; --surface: #fcfcfb; --ink: #0b0b0b; --ink-2: #52514e; --muted: #898781;
+    --grid: #e1e0d9; --axis: #c3c2b7; --ring: rgba(11,11,11,0.10); --band: rgba(11,11,11,0.05);
+    --good: #0ca30c; --warning: #fab219; --critical: #d03b3b;
+    --s1: #2a78d6; --s2: #eb6834; --s3: #1baf7a; --s4: #eda100; --s5: #e87ba4; --s6: #008300; --s7: #4a3aa7; --s8: #e34948;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      color-scheme: dark;
+      --page: #0d0d0d; --surface: #1a1a19; --ink: #ffffff; --ink-2: #c3c2b7; --muted: #898781;
+      --grid: #2c2c2a; --axis: #383835; --ring: rgba(255,255,255,0.10); --band: rgba(255,255,255,0.06);
+      --s1: #3987e5; --s2: #d95926; --s3: #199e70; --s4: #c98500; --s5: #d55181; --s6: #008300; --s7: #9085e9; --s8: #e66767;
+    }
+  }
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --page: #0d0d0d; --surface: #1a1a19; --ink: #ffffff; --ink-2: #c3c2b7; --muted: #898781;
+    --grid: #2c2c2a; --axis: #383835; --ring: rgba(255,255,255,0.10); --band: rgba(255,255,255,0.06);
+    --s1: #3987e5; --s2: #d95926; --s3: #199e70; --s4: #c98500; --s5: #d55181; --s6: #008300; --s7: #9085e9; --s8: #e66767;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--page); color: var(--ink);
+         font: 15px/1.45 system-ui, -apple-system, "Segoe UI", sans-serif; }
+  main { max-width: 1400px; margin: 0 auto; padding: 20px 16px 32px; }
+  header { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 8px 24px; margin-bottom: 16px; }
+  h1 { font-size: 22px; margin: 0; font-weight: 650; }
+  .sub { color: var(--ink-2); font-size: 14px; margin-top: 2px; }
+  .clock { font-size: 28px; font-weight: 600; font-variant-numeric: tabular-nums; }
+  .pill { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; color: var(--ink-2);
+          border: 1px solid var(--ring); border-radius: 999px; padding: 2px 10px; margin-left: 10px; vertical-align: middle; }
+  .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--good); }
+  .card { background: var(--surface); border: 1px solid var(--ring); border-radius: 12px; padding: 16px; }
+  .kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; margin-bottom: 12px; }
+  .kpi .label { color: var(--ink-2); font-size: 13px; }
+  .kpi .value { font-size: 34px; font-weight: 650; line-height: 1.15; }
+  .kpi .note { color: var(--muted); font-size: 12.5px; }
+  .grid { display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 1fr); gap: 12px; }
+  @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+  h2 { font-size: 15px; margin: 0 0 4px; font-weight: 600; }
+  .hint { color: var(--muted); font-size: 12.5px; margin: 0 0 8px; }
+  #chart { position: relative; }
+  #chart svg { display: block; width: 100%; height: 340px; }
+  .legend { display: flex; flex-wrap: wrap; gap: 4px 14px; margin-top: 8px; font-size: 13px; color: var(--ink-2); }
+  .swatch { display: inline-block; width: 10px; height: 10px; border-radius: 3px; margin-right: 6px; vertical-align: -1px; }
+  .tooltip { position: absolute; pointer-events: none; background: var(--surface); border: 1px solid var(--ring);
+             border-radius: 8px; padding: 8px 10px; font-size: 12.5px; box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+             display: none; white-space: nowrap; font-variant-numeric: tabular-nums; }
+  table { width: 100%; border-collapse: collapse; font-size: 14px; font-variant-numeric: tabular-nums; }
+  th { text-align: left; color: var(--ink-2); font-weight: 500; font-size: 12.5px; padding: 6px 4px; border-bottom: 1px solid var(--grid); }
+  td { padding: 7px 4px; border-bottom: 1px solid var(--grid); vertical-align: middle; }
+  td.num { text-align: right; }
+  .bar { position: relative; width: 64px; height: 6px; border-radius: 3px; background: var(--grid); display: inline-block; vertical-align: middle; margin-right: 6px; }
+  .bar span { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 3px; background: var(--ink-2); }
+  .badge { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 600; white-space: nowrap; }
+  .badge .icon { width: 10px; height: 10px; flex: none; }
+  .tag { font-size: 11px; color: var(--ink-2); border: 1px solid var(--ring); border-radius: 4px; padding: 0 4px; margin-left: 4px; font-weight: 500; }
+  .feed { list-style: none; margin: 0; padding: 0; max-height: 260px; overflow: auto; }
+  .feed li { display: grid; grid-template-columns: 76px 16px 1fr; gap: 8px; padding: 6px 0; border-bottom: 1px solid var(--grid); font-size: 14px; }
+  .feed time { color: var(--muted); font-variant-numeric: tabular-nums; font-size: 13px; }
+  .feed .icon { width: 10px; height: 10px; margin-top: 5px; }
+  .empty { color: var(--muted); font-size: 13.5px; padding: 12px 0; }
+  .bottom { margin-top: 12px; }
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <div>
+      <h1>DDoS detector <span class="pill" id="status"><span class="dot" id="status-dot"></span><span id="status-text">connecting</span></span></h1>
+      <div class="sub" id="subtitle">Waiting for the detector's files</div>
+    </div>
+    <div class="clock" id="clock">--:--:--</div>
+  </header>
+
+  <section class="kpis">
+    <div class="card kpi"><div class="label">Sources blocked now</div><div class="value" id="k-active">0</div><div class="note" id="k-active-note">&nbsp;</div></div>
+    <div class="card kpi"><div class="label">Blocks so far</div><div class="value" id="k-blocks">0</div><div class="note">drop flows installed in OVS</div></div>
+    <div class="card kpi"><div class="label">Sources talking to the server</div><div class="value" id="k-sources">0</div><div class="note">in the last 2 minutes</div></div>
+    <div class="card kpi"><div class="label">Windows scored</div><div class="value" id="k-windows">0</div><div class="note">one per source per second</div></div>
+    <div class="card kpi"><div class="label">Model version</div><div class="value" id="k-version">0</div><div class="note" id="k-version-note">as trained</div></div>
+  </section>
+
+  <section class="grid">
+    <div class="card">
+      <h2>Packets per second sent to the server, by source</h2>
+      <p class="hint">Last 2 minutes, log scale. Bold lines: sources the detector flagged; dots: flagged seconds. Red dashed line: source blocked, after which its line stops because the switch drops its packets. Grey band: the real attack (recorded sessions only).</p>
+      <div id="chart"><div class="tooltip" id="tooltip"></div></div>
+      <div class="legend" id="legend"></div>
+    </div>
+    <div class="card">
+      <h2>Sources</h2>
+      <p class="hint">Latest second of each source. Score: the model's attack probability.</p>
+      <table>
+        <thead><tr><th>Source</th><th class="num">Pkts/s</th><th>Score</th><th>State</th></tr></thead>
+        <tbody id="peers"></tbody>
+      </table>
+      <div class="empty" id="peers-empty">No traffic yet</div>
+    </div>
+  </section>
+
+  <section class="card bottom">
+    <h2>Detector events</h2>
+    <ul class="feed" id="feed"></ul>
+    <div class="empty" id="feed-empty">No events yet</div>
+  </section>
+</main>
+
+<script>
+const SLOTS = ["--s1", "--s2", "--s3", "--s4", "--s5", "--s6", "--s7", "--s8"];
+const colorOf = new Map();   // colour follows the source, in order of first appearance
+const css = name => getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+function color(ip) {
+  if (!colorOf.has(ip)) colorOf.set(ip, colorOf.size < SLOTS.length ? SLOTS[colorOf.size] : null);
+  const slot = colorOf.get(ip);
+  return slot ? css(slot) : css("--muted");
+}
+const ICONS = {   // status never by colour alone: shape + label
+  good: '<svg class="icon" viewBox="0 0 10 10"><circle cx="5" cy="5" r="4.5" fill="var(--good)"/></svg>',
+  warning: '<svg class="icon" viewBox="0 0 10 10"><path d="M5 0.5L9.6 9.5H0.4z" fill="var(--warning)"/></svg>',
+  critical: '<svg class="icon" viewBox="0 0 10 10"><rect x="0.5" y="0.5" width="9" height="9" rx="1.5" fill="var(--critical)"/></svg>',
+  info: '<svg class="icon" viewBox="0 0 10 10"><circle cx="5" cy="5" r="4" fill="none" stroke="var(--muted)" stroke-width="1.5"/></svg>',
+};
+const fmt = n => n.toLocaleString("en-US");
+const clock = t => new Date(t * 1000).toLocaleTimeString("en-GB", {hour12: false});
+const esc = s => String(s).replace(/[&<>"]/g, c => ({"&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;"}[c]));
+let last = null;
+
+function header(s) {
+  const st = s.settings || {};
+  const where = st.iface ? `${st.iface} → ${st.victim}` : (st.replay ? `replay of ${st.replay}` : (st.victim || ""));
+  const mode = st.mode ? `${st.mode}${st.adaptive ? ", adaptive" : ""}` : "";
+  const block = st.block_seconds ? `blocks last ${st.block_seconds} s` : "";
+  const view = s.replay ? `Recorded session, ${s.speed}× speed` : "Live";
+  document.getElementById("subtitle").textContent = [view, where, mode, block].filter(Boolean).join(" · ");
+  document.getElementById("clock").textContent = s.now ? clock(s.now) : "--:--:--";
+  const calibrating = st.mode === "hybrid" && !s.totals.calibrated;
+  const text = s.finished ? "replay finished" : calibrating ? "learning normal traffic" : s.totals.windows ? "watching" : "waiting for traffic";
+  document.getElementById("status-text").textContent = text;
+  document.getElementById("status-dot").style.background = s.finished ? css("--muted") : calibrating ? css("--warning") : css("--good");
+}
+
+function kpis(s) {
+  const t = s.totals;
+  document.getElementById("k-active").textContent = fmt(t.active_blocks);
+  document.getElementById("k-active-note").textContent =
+    s.peers.filter(p => p.blocked_for > 0).map(p => p.ip).join(", ") || "none";
+  document.getElementById("k-blocks").textContent = fmt(t.blocks);
+  document.getElementById("k-sources").textContent = fmt(t.sources);
+  document.getElementById("k-windows").textContent = fmt(t.windows);
+  document.getElementById("k-version").textContent = fmt(t.model_version);
+  document.getElementById("k-version-note").textContent = t.model_version ? "retrained on pseudo-labels" : "as trained";
+}
+
+function chart(s) {
+  const box = document.getElementById("chart");
+  const W = Math.max(box.clientWidth, 320), H = 340, m = {l: 52, r: 16, t: 16, b: 30};
+  const x0 = s.now - s.history, x1 = s.now;
+  const X = t => m.l + (t - x0) / (x1 - x0) * (W - m.l - m.r);
+  const top = Math.max(10000, ...s.peers.flatMap(p => p.series.map(q => q[1])));
+  const Y = v => H - m.b - Math.log10(Math.max(v, 1)) / Math.log10(top) * (H - m.t - m.b);
+  const ticks = [1, 10, 100, 1000, 10000, 100000].filter(v => v <= top);
+  let g = "", labels = "";
+  for (const a of s.attacks) {   // ground truth, recorded sessions only
+    const a0 = X(Math.max(a.start, x0)), a1 = X(Math.min(a.end, x1));
+    if (a1 > a0) {
+      g += `<rect x="${a0}" y="${m.t}" width="${a1 - a0}" height="${H - m.t - m.b}" fill="var(--band)"/>`;
+      labels += `<text x="${a0 + 4}" y="${m.t + 12}" font-size="11" fill="var(--ink-2)">attack: ${esc(a.attack)} ${esc(a.rate)} · ${esc(a.ip)}</text>`;
+    }
+  }
+  for (const v of ticks) g += `<line x1="${m.l}" x2="${W - m.r}" y1="${Y(v)}" y2="${Y(v)}" stroke="var(--grid)"/>` +
+    `<text x="${m.l - 8}" y="${Y(v) + 4}" text-anchor="end" font-size="11.5" fill="var(--muted)">${v >= 1000 ? v / 1000 + "k" : v}</text>`;
+  for (let sec = 0; sec <= s.history; sec += 30) g += `<text x="${X(x1 - sec)}" y="${H - 10}" text-anchor="middle" font-size="11.5" fill="var(--muted)">${sec ? "−" + sec + " s" : "now"}</text>`;
+  g += `<line x1="${m.l}" x2="${W - m.r}" y1="${H - m.b}" y2="${H - m.b}" stroke="var(--axis)"/>`;
+  // Sources never flagged or blocked recede; the ones the detector acted on stand out
+  const quiet = p => !p.blocks && !p.series.some(q => q[2]);
+  for (const p of [...s.peers].sort((a, b) => quiet(b) - quiet(a))) {
+    let d = "", prev = null;
+    for (const [t, n] of p.series) {
+      d += `${prev !== null && t - prev <= 1.5 ? "L" : "M"}${X(t + 0.5).toFixed(1)} ${Y(n).toFixed(1)}`;
+      prev = t;
+    }
+    if (d) g += `<path d="${d}" fill="none" stroke="${color(p.ip)}" stroke-width="${quiet(p) ? 1.25 : 2.5}"` +
+      ` stroke-opacity="${quiet(p) ? 0.45 : 1}" stroke-linejoin="round"/>`;
+    for (const [t, n, f] of p.series) if (f)
+      g += `<circle cx="${X(t + 0.5)}" cy="${Y(n)}" r="3.5" fill="${color(p.ip)}" stroke="var(--surface)" stroke-width="2"/>`;
+  }
+  for (const e of s.events) if (e.event === "block" && e.ts >= x0) {
+    g += `<line x1="${X(e.ts)}" x2="${X(e.ts)}" y1="${m.t}" y2="${H - m.b}" stroke="var(--critical)" stroke-width="1.5" stroke-dasharray="4 3"/>` +
+      `<text x="${X(e.ts) + 4}" y="${H - m.b - 6}" font-size="11.5" font-weight="600" fill="var(--ink)">blocked ${esc(e.peer)}</text>`;
+  }
+  g += labels;
+  g += `<line id="cross" y1="${m.t}" y2="${H - m.b}" stroke="var(--axis)" visibility="hidden"/>`;
+  g += `<rect id="hit" x="${m.l}" y="${m.t}" width="${W - m.l - m.r}" height="${H - m.t - m.b}" fill="transparent"/>`;
+  const old = box.querySelector("svg");
+  const svg = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Packets per second by source, last two minutes">${g}</svg>`;
+  if (old) old.outerHTML = svg; else box.insertAdjacentHTML("afterbegin", svg);
+  hover(s, X, W, m);
+  document.getElementById("legend").innerHTML = s.peers.map(p =>
+    `<span><span class="swatch" style="background:${color(p.ip)}"></span>${esc(p.ip)}</span>`).join("");
+}
+
+function hover(s, X, W, m) {
+  const box = document.getElementById("chart"), tip = document.getElementById("tooltip");
+  const hit = box.querySelector("#hit"), cross = box.querySelector("#cross");
+  const x0 = s.now - s.history;
+  hit.onmousemove = ev => {
+    const r = box.querySelector("svg").getBoundingClientRect();
+    const px = (ev.clientX - r.left) * W / r.width;
+    const t = Math.floor(x0 + (px - m.l) / (W - m.l - m.r) * s.history);
+    const rows = s.peers.map(p => [p, p.series.find(q => q[0] === t)]).filter(([, q]) => q);
+    cross.setAttribute("x1", X(t + 0.5)); cross.setAttribute("x2", X(t + 0.5)); cross.setAttribute("visibility", "visible");
+    tip.innerHTML = `<b>${clock(t)}</b><br>` + (rows.length ? rows.map(([p, q]) =>
+      `<span class="swatch" style="background:${color(p.ip)}"></span>${esc(p.ip)}: ${fmt(q[1])} pkts/s${q[2] ? " · flagged" : ""}`).join("<br>") : "no traffic");
+    tip.style.display = "block";
+    const left = (ev.clientX - box.getBoundingClientRect().left) + 14;
+    tip.style.left = Math.min(left, box.clientWidth - tip.offsetWidth - 4) + "px";
+    tip.style.top = "24px";
+  };
+  hit.onmouseleave = () => { tip.style.display = "none"; cross.setAttribute("visibility", "hidden"); };
+}
+
+function peers(s) {
+  const rows = [...s.peers].sort((a, b) => (b.blocked_for > 0) - (a.blocked_for > 0) || b.n - a.n);
+  document.getElementById("peers-empty").style.display = rows.length ? "none" : "block";
+  document.getElementById("peers").innerHTML = rows.map(p => {
+    const state = p.blocked_for > 0 ? ["critical", `Blocked · ${Math.ceil(p.blocked_for)} s`]
+      : p.flagged ? ["warning", "Flagged"] : ["good", "Normal"];
+    const score = p.score === null ? "–" :
+      `<span class="bar"><span style="width:${Math.round(p.score * 100)}%"></span></span>${p.score.toFixed(2)}`;
+    return `<tr><td><span class="swatch" style="background:${color(p.ip)}"></span>${esc(p.ip)}` +
+      `${p.novel ? '<span class="tag">new</span>' : ""}${p.blocks ? `<span class="tag">${p.blocks}× blocked</span>` : ""}</td>` +
+      `<td class="num">${p.blocked_for > 0 && !p.series.length ? "0" : fmt(p.n)}</td><td>${score}</td>` +
+      `<td><span class="badge">${ICONS[state[0]]}${state[1]}</span></td></tr>`;
+  }).join("");
+}
+
+function feed(s) {
+  const text = e => {
+    if (e.event === "block") return ["critical", `<b>Blocked ${esc(e.peer)}</b> for ${e.seconds} s after ${e.windows} flagged windows (score ${Number(e.score).toFixed(2)})`];
+    if (e.event === "calibrated") return ["info", `Learned normal traffic from ${fmt(e.windows)} windows; novelty detection on`];
+    if (e.event === "retrained") return ["info", `Model retrained → version ${e.version} (${fmt(e.pseudo_attack)} attack examples, ${e.seconds} s)`];
+    if (e.event === "start") return ["good", `Detector started (${esc(e.mode || "supervised")}${e.adaptive ? ", adaptive" : ""})`];
+    return ["warning", `Error: ${esc(e.error || "unknown")}`];
+  };
+  document.getElementById("feed-empty").style.display = s.events.length ? "none" : "block";
+  document.getElementById("feed").innerHTML = s.events.map(e => {
+    const [kind, msg] = text(e);
+    return `<li><time>${clock(e.ts)}</time>${ICONS[kind]}<span>${msg}</span></li>`;
+  }).join("");
+}
+
+async function tick() {
+  try {
+    const s = await (await fetch("/api/state", {cache: "no-store"})).json();
+    last = s;
+    header(s); kpis(s); chart(s); peers(s); feed(s);
+  } catch (err) {
+    document.getElementById("status-text").textContent = "dashboard server not reachable";
+    document.getElementById("status-dot").style.background = css("--critical");
+  }
+}
+tick();
+setInterval(tick, 1000);
+window.addEventListener("resize", () => last && chart(last));
+</script>
+</body>
+</html>

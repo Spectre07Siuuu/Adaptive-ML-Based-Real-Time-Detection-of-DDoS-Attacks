@@ -62,6 +62,7 @@ ddos/                       Python package (run every module from the project ro
   realtime/
     detector.py               v2: live sniffer -> windows -> model -> OVS drop flow (phase 3)
     evaluate_mitigation.py    v2: time to block, traffic stopped, false blocks per session
+    dashboard.py, .html       v2: live web dashboard over the detector's log (no root, no internet)
     predict_server.py         v1: TCP server on 127.0.0.1:9999, JSON features in -> label out
 tests/                      pytest suite for the v2 pipeline
 legacy/live_ai_detector.py  early prototype, does not run as-is (see Known issues)
@@ -432,6 +433,42 @@ Live rerun with the same schedule (m3, 300 s calibration on 1,051 windows):
 | Benign clients blocked | 4 (23 blocks) | 0 |
 | Retrains / pseudo-attack windows | 5 / 58 | 3 / 7 |
 | Detector errors / socket drops | 0 / 0 | 0 / 0 |
+
+## Live dashboard
+
+`realtime/dashboard.py` serves a web page (http://127.0.0.1:8050) that shows the detector at
+work: packets per second from each source over the last 2 minutes, each source's score and
+state (normal, flagged, blocked with a countdown), the blocks as they happen, and retrains. It
+only reads the detector's log files, so it needs no root, and the page has no external
+dependencies, so it works offline.
+
+```
+# watch a live detector (interactive demo: README section "Phase 5", or any --detector session)
+.venv/bin/python -m ddos.realtime.dashboard --log /tmp/demo.jsonl --scores /tmp/demo_scores.csv
+.venv/bin/python -m ddos.realtime.dashboard --session m3
+# replay a recorded session without Mininet, e.g. 5.5 minutes in, at real speed
+.venv/bin/python -m ddos.realtime.dashboard --session m3 --replay --skip 330
+```
+
+With `--session`, the real attack periods from `events.csv` are shaded, so the delay between
+an attack starting and its block is visible.
+
+![Dashboard replaying session m3](reports/dashboard/m3_replay.png)
+
+Interactive demo, three terminals plus the dashboard:
+
+```
+sudo python3 -m ddos.lab.topology                                     # 1: the network, mininet> prompt
+sudo .venv/bin/python -m ddos.realtime.detector --iface s1-eth1 \
+    --victim 10.0.0.100 --block-seconds 30 --log /tmp/demo.jsonl --scores /tmp/demo_scores.csv   # 2
+.venv/bin/python -m ddos.realtime.dashboard --log /tmp/demo.jsonl --scores /tmp/demo_scores.csv  # 3
+# at the mininet> prompt:
+c1 ping -c 3 10.0.0.100                          # a client reaches the server
+a1 hping3 -q -S -p 80 -i u1000 10.0.0.100 &      # SYN flood from 10.0.0.21: blocked in ~1-2 s
+a1 ping -c 3 10.0.0.100                          # the attacker is cut off
+c1 ping -c 3 10.0.0.100                          # the client still gets through
+a1 pkill hping3
+```
 
 ## v1 pipeline
 
