@@ -18,7 +18,7 @@ The code has two pipelines:
 | 0 | Clean data and honest evaluation (prerequisite) | done: 3 lab sessions, baselines in reports/lab |
 | 1 | 02 Cross-dataset eval: lab + CIC-DDoS2019 + CIC-IDS2017 + Kaggle SDN | done: reports/cross_dataset |
 | 2 | 04 DL comparison: 1D-CNN, LSTM, Transformer vs RF/XGBoost | done: reports/models |
-| 3 | 03 Real-time closed-loop mitigation (OVS drop flows) | todo |
+| 3 | 03 Real-time closed-loop mitigation (OVS drop flows) | code done, live demo pending |
 | 4 | 01 Adaptive pipeline: drift detection, online learning, novelty detection | todo |
 | 5 | 05 Deployment-ready architecture | todo |
 
@@ -50,11 +50,15 @@ ddos/                       Python package (run every module from the project ro
     cross_dataset.py          v2: train on one/some datasets, test on each -> reports/cross_dataset
     deep_models.py            v2: 1D-CNN, LSTM, Transformer over packet sequences
     compare_models.py         v2: deep models vs tree baselines, quality + speed -> reports/models
+    train_detector.py         v2: the live detector's model -> models/detector.joblib
     train_models.py           v1: RF, KNN, SVM + comparison table + feature importance
     evaluate_rf.py            v1: RF confusion matrix + ROC curves -> reports/figures/
     train_server_model.py     v1: RF on scaled features, the model used by predict_server
   preprocessing/balance_dataset.py  v1: random undersampling
-  realtime/predict_server.py  v1: TCP server on 127.0.0.1:9999, JSON features in -> label out
+  realtime/
+    detector.py               v2: live sniffer -> windows -> model -> OVS drop flow (phase 3)
+    evaluate_mitigation.py    v2: time to block, traffic stopped, false blocks per session
+    predict_server.py         v1: TCP server on 127.0.0.1:9999, JSON features in -> label out
 tests/                      pytest suite for the v2 pipeline
 legacy/live_ai_detector.py  early prototype, does not run as-is (see Known issues)
 data/raw/pcap/              v1 captures (not in git); lab/<session>/ for v2 captures
@@ -247,6 +251,33 @@ Binary macro-F1 %, mean ± std over 3 seeds:
   the deep-learning option.
 
 Full per-run results, per-attack detection rates and timings are in `reports/models/`.
+
+## Phase 3: live detection and mitigation
+
+`realtime/detector.py` sniffs the victim's switch port (`s1-eth1`) with a raw socket, builds
+the same per-peer 1 s windows as training, and scores each window as it closes with
+`models/detector.joblib` (HGB on window features, trained on all three datasets). A peer
+flagged in 2 consecutive windows gets an OVS flow
+`priority=100,ip,nw_src=<peer>,hard_timeout=<N>,actions=drop`; OVS lifts it after N seconds,
+and a peer still attacking is caught again. The victim's own address is never blocked, and a
+window that cannot be scored is logged as an error rather than treated as normal.
+
+```
+.venv/bin/python -m ddos.training.train_detector
+# a ~10 minute lab session with the detector running (needs the project venv):
+sudo python3 -m ddos.lab.capture --session m1 --seed 11 --repeats 1 --detector
+.venv/bin/python -m ddos.realtime.evaluate_mitigation m1
+```
+
+Detector sessions are saved under `data/raw/pcap/mitigation/`, apart from the training
+captures. The evaluation reports, per attack, the seconds until the attacker was blocked, the
+share of its traffic that still reached the victim, and any benign client that was blocked.
+
+Without root, `--replay <pcap> --dry-run` runs the detector over a recorded capture and logs
+the blocks it would install. Replaying lab session s3 (which the detector model has seen in
+training, so this checks the plumbing, not accuracy): all 30 attacks were caught, median
+1.3–1.8 s after they started (6.3 s for low-rate ICMP), and no benign client window was
+flagged. The detector processed ~100k packets/s.
 
 ## v1 pipeline
 

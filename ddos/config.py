@@ -19,6 +19,12 @@ ALL_LABEL_NAMES = {**LABEL_NAMES, 4: "HTTP Flood", 5: "Reflection"}
 # Mininet lab captures (ddos/lab): one folder per session with capture.pcap, events.csv, meta.json
 LAB_PCAP_DIR = PCAP_DIR / "lab"
 
+# Lab sessions run with the live detector (phase 3); kept apart from the training captures
+MITIGATION_DIR = PCAP_DIR / "mitigation"
+
+# Model bundle loaded by the live detector (ddos/training/train_detector.py)
+DETECTOR_MODEL = MODELS_DIR / "detector.joblib"
+
 # Public datasets (ddos/datasets): one folder per dataset, sliced to the victim's traffic
 EXTERNAL_DIR = DATA_DIR / "raw" / "external"
 
