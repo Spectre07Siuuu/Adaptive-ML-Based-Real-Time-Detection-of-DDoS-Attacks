@@ -20,7 +20,7 @@ The code has two pipelines:
 | 2 | 04 DL comparison: 1D-CNN, LSTM, Transformer vs RF/XGBoost | done: reports/models |
 | 3 | 03 Real-time closed-loop mitigation (OVS drop flows) | done: reports/mitigation |
 | 4 | 01 Adaptive pipeline: drift detection, online learning, novelty detection | done (simulation): reports/adaptive |
-| 5 | 05 Deployment-ready architecture | code done, live zero-day demo pending |
+| 5 | 05 Deployment-ready architecture | done: deploy/, reports/mitigation |
 
 ## Folder structure
 
@@ -420,6 +420,18 @@ Replaying the m2 capture reproduces the live run exactly (23 client blocks) and 
 Calibration now defaults to 300 s. It can run past the first attacks because it keeps only
 the windows the supervised model calls benign; an attack that model misses during calibration
 would still be learned as normal, so in deployment the calibration should be a quiet period.
+
+Live rerun with the same schedule (m3, 300 s calibration on 1,051 windows):
+
+| Result | m2 (45 s) | m3 (300 s) |
+|---|---|---|
+| Attacks blocked | 14 / 14 | 14 / 14 |
+| Time to block, median (max) | 1.4 s (2.0 s) | 1.33 s (2.0 s) |
+| Attack traffic stopped | 92.5% | 92.1% |
+| Benign windows flagged | 4.6% | 0.0% |
+| Benign clients blocked | 4 (23 blocks) | 0 |
+| Retrains / pseudo-attack windows | 5 / 58 | 3 / 7 |
+| Detector errors / socket drops | 0 / 0 | 0 / 0 |
 
 ## v1 pipeline
 
