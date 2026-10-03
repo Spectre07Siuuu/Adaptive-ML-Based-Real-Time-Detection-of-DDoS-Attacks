@@ -67,8 +67,9 @@ def run_attacks(net, events, start, logs, procs, times):
         sleep_until(when)
         ev = events[i]
         if is_start:
+            # stdout dropped: hping3 prints every ICMP reply even with -q (~17 MB per attack)
             with open(logs / f"round{ev.round:02d}_{ev.attacker}.log", "w") as log:
-                procs[i] = net[ev.attacker].popen(ev.command(VICTIM[1]), stdout=log, stderr=log)
+                procs[i] = net[ev.attacker].popen(ev.command(VICTIM[1]), stdout=DEVNULL, stderr=log)
             times[i] = [time.time(), None]
             print(f"  [{datetime.now():%H:%M:%S}] round {ev.round:2d}: {ev.attacker} "
                   f"{ev.attack} {ev.rate} ({ev.pps} pps)")
@@ -110,7 +111,8 @@ def give_back_to_user(out):
     uid, gid = os.environ.get("SUDO_UID"), os.environ.get("SUDO_GID")
     if uid is None:
         return
-    for path in [out, *out.rglob("*")]:
+    # Include lab/ itself (created by the first run), or the user cannot delete sessions
+    for path in [out.parent, out, *out.rglob("*")]:
         try:
             os.chown(path, int(uid), int(gid))
         except OSError:
