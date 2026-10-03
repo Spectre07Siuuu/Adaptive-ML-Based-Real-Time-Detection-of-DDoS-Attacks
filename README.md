@@ -388,10 +388,38 @@ none of the training data. It is not in the default schedule, so the training se
 reproducible.
 
 ```
-sudo python3 -m ddos.lab.capture --session m2 --seed 12 --repeats 1 \
+sudo python3 -m ddos.lab.capture --session m3 --seed 12 --repeats 1 \
     --attacks syn udp icmp ack --detector --detector-mode hybrid --adaptive
-.venv/bin/python -m ddos.realtime.evaluate_mitigation m2
+.venv/bin/python -m ddos.realtime.evaluate_mitigation m3
 ```
+
+First live run (m2, 45 s calibration):
+
+| Result | Value |
+|---|---|
+| Attacks blocked (3 of them ACK floods) | 14 / 14, median 1.4 s, max 2.0 s |
+| Attack traffic stopped | 92.5% on average |
+| Benign clients blocked | **4 clients, 23 blocks** (4.6% of their windows flagged) |
+| Model retrains / socket drops | 5 (4–9 s each) / 0 |
+
+The ACK flood was caught, but not as a zero-day: the supervised model already scored it 1.0
+(it resembles the SYN and HTTP floods it was trained on), and the novelty detector agreed. The
+false blocks came from the novelty detector (87 of 96 flagged client windows): 45 s of
+calibration had not yet seen the clients' periodic iperf transfers and large downloads.
+Pseudo-labelling then fed some of those windows back as attacks, raising the retrained
+supervised model's client false positives from 0% to ~0.5–1%, the risk noted in phase 4.
+
+Replaying the m2 capture reproduces the live run exactly (23 client blocks) and shows the fix:
+
+| Calibration | Client windows flagged | Clients blocked | Attacker blocks |
+|---|---|---|---|
+| 45 s (m2) | 4.6% | 23 | 19 |
+| 300 s (m2) | 0.24% | 0 | 19 |
+| 300 s (lab s3) | 0.00% | 0 | 42 |
+
+Calibration now defaults to 300 s. It can run past the first attacks because it keeps only
+the windows the supervised model calls benign; an attack that model misses during calibration
+would still be learned as normal, so in deployment the calibration should be a quiet period.
 
 ## v1 pipeline
 
