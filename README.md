@@ -20,7 +20,7 @@ The code has two pipelines:
 | 2 | 04 DL comparison: 1D-CNN, LSTM, Transformer vs RF/XGBoost | done: reports/models |
 | 3 | 03 Real-time closed-loop mitigation (OVS drop flows) | done: reports/mitigation |
 | 4 | 01 Adaptive pipeline: drift detection, online learning, novelty detection | done (simulation): reports/adaptive |
-| 5 | 05 Deployment-ready architecture | todo |
+| 5 | 05 Deployment-ready architecture | code done, live zero-day demo pending |
 
 ## Folder structure
 
@@ -57,6 +57,7 @@ ddos/                       Python package (run every module from the project ro
   preprocessing/balance_dataset.py  v1: random undersampling
   adaptive/
     novelty.py                kNN novelty detector fitted on one network's benign traffic
+    online.py                 pseudo-labelling and retraining, shared by the replay and the detector
     stream.py                 lab model replayed on a new network, static vs adaptive (phase 4)
   realtime/
     detector.py               v2: live sniffer -> windows -> model -> OVS drop flow (phase 3)
@@ -69,6 +70,7 @@ data/raw/external/          public datasets and their cached unlabelled rows (no
 data/processed/             *_windows.csv, *_flows.csv (v2), final_dataset.csv, final_balanced_dataset.csv (v1)
 models/                     trained models (not in git); models/lab/ for v2
 reports/                    v1 reports; reports/lab/ for v2
+deploy/                     detector.toml (example config), ddos-detector.service (systemd)
 docs/                       proposal
 ```
 
@@ -353,6 +355,43 @@ flagged window in a row, the rule the live detector blocks on:
   should feed the attack pool.
 - This is a replay, not yet the live detector: adding the novelty model and the retraining
   loop to `realtime/detector.py` is part of phase 5.
+
+## Phase 5: deployment
+
+The live detector now carries the phase 4 pipeline (`--mode hybrid --adaptive`):
+
+1. For the first `--calibrate` seconds it collects the windows the supervised model calls
+   benign and fits the novelty detector on them, so an attack during calibration is not
+   learned as normal.
+2. From then on a window is flagged if the supervised model or the novelty detector says so;
+   2 flagged windows in a row block the peer, as before.
+3. Every `--retrain-seconds` a background thread refits the supervised model on its training
+   data (stored in `models/detector.joblib`) plus the pseudo-labels; the new model replaces the
+   old one when ready, so sniffing never stops.
+
+Operations:
+
+- Every option can come from a TOML file (`deploy/detector.toml`); the command line wins.
+- `deploy/ddos-detector.service` runs it under systemd (restart on failure; SIGTERM removes the
+  detector's drop flows).
+- The log gets a `stats` line every minute: packets, windows, flagged windows, active blocks,
+  model version, socket drops.
+- `scores.csv` records, per window, the supervised score, the novelty flag, the decision and
+  the model version that made it.
+
+A replay of lab session s3 (dry run, 50 s calibration, retrain every 120 s) calibrates on 180
+windows, retrains 6 times (5–9 s each, off the sniffing path), blocks all three attackers, and
+blocks no client (0.23% of client windows look new, never two in a row).
+
+Zero-day test: the lab can now also run a TCP ACK flood (`hping3 -A`), an attack that is in
+none of the training data. It is not in the default schedule, so the training sessions stay
+reproducible.
+
+```
+sudo python3 -m ddos.lab.capture --session m2 --seed 12 --repeats 1 \
+    --attacks syn udp icmp ack --detector --detector-mode hybrid --adaptive
+.venv/bin/python -m ddos.realtime.evaluate_mitigation m2
+```
 
 ## v1 pipeline
 

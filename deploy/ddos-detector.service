@@ -1,0 +1,26 @@
+# systemd unit for the live detector. Install:
+#   sudo cp deploy/ddos-detector.service /etc/systemd/system/
+#   sudo mkdir -p /var/log/ddos-detector
+#   sudo systemctl daemon-reload && sudo systemctl enable --now ddos-detector
+# Edit WorkingDirectory to the project folder. Check: systemctl status ddos-detector,
+# tail -f /var/log/ddos-detector/detector.jsonl (a "stats" line every minute).
+
+[Unit]
+Description=Adaptive ML DDoS detector with OVS mitigation
+After=network-online.target openvswitch-switch.service
+Wants=openvswitch-switch.service
+
+[Service]
+Type=simple
+WorkingDirectory=/opt/ddos-detector
+ExecStart=/opt/ddos-detector/.venv/bin/python -m ddos.realtime.detector --config deploy/detector.toml
+Restart=on-failure
+RestartSec=5
+# Raw sockets and ovs-ofctl need root; nothing else is required
+User=root
+# SIGTERM: the detector removes its drop flows and logs a final "stop" line
+KillSignal=SIGTERM
+TimeoutStopSec=20
+
+[Install]
+WantedBy=multi-user.target

@@ -14,7 +14,8 @@ FIGURES_DIR   = REPORTS_DIR / "figures"
 
 LABEL_NAMES = {0: "Normal", 1: "ICMP Flood", 2: "UDP Flood", 3: "SYN Flood"}
 # Attack types that occur only in the public datasets (ddos/datasets/catalog.py)
-ALL_LABEL_NAMES = {**LABEL_NAMES, 4: "HTTP Flood", 5: "Reflection"}
+ALL_LABEL_NAMES = {**LABEL_NAMES, 4: "HTTP Flood", 5: "Reflection",
+                   6: "ACK Flood"}   # 6: lab only, never in any training data (phase 5 zero-day test)
 
 # Mininet lab captures (ddos/lab): one folder per session with capture.pcap, events.csv, meta.json
 LAB_PCAP_DIR = PCAP_DIR / "lab"

@@ -25,16 +25,15 @@ Reports: reports/adaptive/ (<dataset>_blocks.csv per 10 minutes, summary.csv,
 adaptation.png)
 """
 import argparse
-from collections import defaultdict, deque
 
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-from sklearn.ensemble import HistGradientBoostingClassifier
 
 from ddos.adaptive.novelty import KnnNovelty
+from ddos.adaptive.online import PseudoLabeler, fit_supervised
 from ddos.config import PROCESSED_DIR, REPORTS_DIR, WINDOW_SECONDS, ALL_LABEL_NAMES
 from ddos.features.window import FEATURES
 from ddos.training.cross_dataset import cap
@@ -42,17 +41,9 @@ from ddos.training.cross_dataset import cap
 CALIBRATION = 1800   # seconds of unlabelled traffic that define "normal" on the new network
 STEP = 60            # seconds of stream scored at a time
 RETRAIN = 600        # adaptive detector: seconds between retrains
-CONSECUTIVE = 2      # novelty flags in a row before a peer's windows count as attack examples
-POOL = 10_000        # most recent pseudo-labelled windows kept per class
 BLOCK = 600          # reporting interval
 OUT = REPORTS_DIR / "adaptive"
-
-
 SEEDS = 3
-
-
-def fit_supervised(x, y, seed):
-    return HistGradientBoostingClassifier(class_weight="balanced", random_state=seed).fit(x, y)
 
 
 class AdaptiveDetector:
@@ -62,9 +53,12 @@ class AdaptiveDetector:
         self.seed = seed
         self.model = fit_supervised(self.base_x, self.base_y, seed)
         self.novelty, self.adaptive = novelty, adaptive
-        self.benign, self.attack = deque(maxlen=POOL), deque(maxlen=POOL)
-        self.streak, self.last_seen = defaultdict(int), {}
+        self.labeler = PseudoLabeler(WINDOW_SECONDS)
         self.retrains = 0
+
+    @property
+    def attack(self):
+        return self.labeler.attack
 
     def step(self, batch):
         """Decide on a batch of windows (time order); remember pseudo-labels if adaptive."""
@@ -73,24 +67,14 @@ class AdaptiveDetector:
         nov = self.novelty.flag(batch)
         if self.adaptive:
             for row, flagged, peer, start in zip(x, nov, batch["peer_ip"], batch["window_start"]):
-                if self.last_seen.get(peer, -np.inf) < start - WINDOW_SECONDS:
-                    self.streak[peer] = 0          # a gap breaks the streak
-                self.last_seen[peer] = start
-                self.streak[peer] = self.streak[peer] + 1 if flagged else 0
-                if not flagged:
-                    self.benign.append(row)
-                elif self.streak[peer] >= CONSECUTIVE:
-                    self.attack.append(row)
+                self.labeler.observe(row, flagged, peer, start)
         return sup, nov
 
     def retrain(self):
-        if not self.adaptive or not self.benign:
-            return
-        extra = [np.array(self.benign)] + ([np.array(self.attack)] if self.attack else [])
-        labels = [np.zeros(len(self.benign), int)] + ([np.ones(len(self.attack), int)] if self.attack else [])
-        self.model = fit_supervised(np.concatenate([self.base_x, *extra]),
-                                    np.concatenate([self.base_y, *labels]), self.seed)
-        self.retrains += 1
+        data = self.labeler.training_set(self.base_x, self.base_y) if self.adaptive else None
+        if data is not None:
+            self.model = fit_supervised(*data, self.seed)
+            self.retrains += 1
 
 
 def run(name, base, seed):

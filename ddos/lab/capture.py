@@ -33,7 +33,7 @@ from subprocess import DEVNULL
 
 from ddos.config import ROOT, LAB_PCAP_DIR, MITIGATION_DIR
 from ddos.lab.scenario import (VICTIM, CLIENTS, ATTACKERS, HTTP_PORT, IPERF_BASE_PORT,
-                               WEB_FILES, LABELS, build_schedule)
+                               WEB_FILES, LABELS, ALL_ATTACKS, build_schedule)
 
 TOOLS = ["mn", "ovs-ofctl", "tcpdump", "hping3", "iperf3"]
 WARMUP = 60     # benign-only seconds before the first attack
@@ -92,7 +92,7 @@ def tcpdump_stats(stderr_text):
     return stats
 
 
-def start_detector(out, logs, iface, block_seconds):
+def start_detector(out, logs, iface, args):
     """Run the live detector in the root namespace; wait until it is sniffing."""
     python = ROOT / ".venv" / "bin" / "python"
     if not python.exists():
@@ -102,7 +102,9 @@ def start_detector(out, logs, iface, block_seconds):
     with open(logs / "detector.log", "w") as console:
         proc = subprocess.Popen([str(python), "-m", "ddos.realtime.detector", "--iface", iface,
                                  "--victim", VICTIM[1], "--switch", "s1",
-                                 "--block-seconds", str(block_seconds),
+                                 "--block-seconds", str(args.block_seconds), "--mode", args.detector_mode,
+                                 "--calibrate", str(WARMUP - 15),   # learn normal before the first attack
+                                 *(["--adaptive"] if args.adaptive else []),
                                  "--log", str(log), "--scores", str(out / "scores.csv")],
                                 cwd=str(ROOT), stdout=console, stderr=console)
     deadline = time.time() + 30
@@ -121,14 +123,16 @@ def write_outputs(out, args, events, times, t0, t_end, dump_stats):
                     "size", "port", "start_ts", "end_ts"])
         for i, e in enumerate(events):
             if i in times:
-                w.writerow([args.session, e.round, e.attacker, e.ip, e.attack, LABELS[e.attack],
+                w.writerow([args.session, e.round, e.attacker, e.ip, e.attack, ALL_ATTACKS[e.attack],
                             e.rate, e.pps, e.size, e.port, *times[i]])
     meta = {
         "session": args.session, "seed": args.seed, "repeats": args.repeats, "bw_mbps": args.bw,
         "victim": VICTIM[1], "clients": dict(CLIENTS), "attackers": dict(ATTACKERS),
         "interface": "s1-eth1", "snaplen": SNAPLEN, "warmup_s": WARMUP,
         "start_ts": t0, "end_ts": t_end, "tcpdump": dump_stats,
-        "detector": {"block_seconds": args.block_seconds} if args.detector else None,
+        "detector": {"block_seconds": args.block_seconds, "mode": args.detector_mode,
+                     "adaptive": args.adaptive} if args.detector else None,
+        "attacks": args.attacks,
         "created": datetime.now().isoformat(timespec="seconds"),
     }
     (out / "meta.json").write_text(json.dumps(meta, indent=2))
@@ -157,9 +161,13 @@ def main():
     parser.add_argument("--force", action="store_true", help="overwrite an existing session")
     parser.add_argument("--detector", action="store_true", help="run the live detector with mitigation")
     parser.add_argument("--block-seconds", type=int, default=30, help="how long a detected peer stays blocked")
+    parser.add_argument("--detector-mode", choices=["supervised", "hybrid"], default="supervised")
+    parser.add_argument("--adaptive", action="store_true", help="detector retrains on pseudo-labels (hybrid)")
+    parser.add_argument("--attacks", nargs="+", choices=list(ALL_ATTACKS), default=list(LABELS),
+                        help="attack types in the schedule (ack: never seen in training)")
     args = parser.parse_args()
 
-    events, attack_phase = build_schedule(args.seed, args.repeats)
+    events, attack_phase = build_schedule(args.seed, args.repeats, attacks=tuple(args.attacks))
     total = WARMUP + attack_phase
     print(f"Session {args.session}: {len(events)} attacks in {events[-1].round} rounds, "
           f"about {total / 60:.0f} min")
@@ -200,8 +208,9 @@ def main():
                                 stdout=DEVNULL, stderr=dump_err)
         time.sleep(2)
         if args.detector:
-            detector = start_detector(out, logs, VICTIM_PORT, args.block_seconds)
-            print(f"  [{datetime.now():%H:%M:%S}] detector running, blocks last {args.block_seconds}s")
+            detector = start_detector(out, logs, VICTIM_PORT, args)
+            print(f"  [{datetime.now():%H:%M:%S}] detector running ({args.detector_mode}"
+                  f"{', adaptive' if args.adaptive else ''}), blocks last {args.block_seconds}s")
 
         t0 = time.time()
         for i, (name, _) in enumerate(CLIENTS):

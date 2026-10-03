@@ -92,7 +92,7 @@ def evaluate(session_dir):
         "benign clients blocked": int(false_blocks["peer"].nunique()),
         "false blocks": len(false_blocks),
         "detector errors": sum(e["event"] == "error" for e in log),
-        "socket kernel drops": next((e.get("kernel_drops") for e in log if e["event"] == "stop"), None),
+        "socket kernel drops": sum(e.get("kernel_drops", 0) for e in log if e["event"] in ("stats", "stop")),
     }
     return attacks, summary
 

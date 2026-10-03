@@ -74,7 +74,7 @@ def test_scores_windows_and_blocks_flagged_peer():
     det.score([_row(ATTACKER, 5000), _row(CLIENT, 12)], 11.0)
     assert [e["peer"] for e in events if e["event"] == "block"] == [ATTACKER]
     lines = scores.getvalue().splitlines()
-    assert lines == ["10,10.0.0.21,5000,1.0000,1", "10,10.0.0.11,12,0.0000,0"]
+    assert lines == ["10,10.0.0.21,5000,1.0000,0,1,0", "10,10.0.0.11,12,0.0000,0,0,0"]
 
 
 def test_unscorable_window_is_an_error_not_normal():
@@ -122,3 +122,41 @@ def test_evaluate_mitigation_on_a_synthetic_session(tmp_path):
     assert (a2.status, a2.packets_delivered, a2["traffic_stopped_%"]) == ("missed", 50, 0.0)
     assert summary["blocked while attacking %"] == 50.0 and summary["missed"] == 1
     assert summary["benign clients blocked"] == 1 and summary["benign windows flagged %"] == 50.0
+
+
+def test_hybrid_calibrates_on_benign_then_flags_novel_windows_and_retrains():
+    rng = np.random.default_rng(0)
+    events, scores, ovs = [], io.StringIO(), FakeOvs()
+    m = Mitigator("s1", consecutive=2, run=ovs, log=lambda **e: events.append(e))
+    base_x = rng.random((50, len(FEATURES))).astype(np.float32)
+    bundle = {"model": FakeModel(), "features": FEATURES, "window": 1.0,
+              "base_x": base_x, "base_y": np.zeros(50, int)}
+    det = Detector(bundle, VICTIM, m, 0.5, lambda **e: events.append(e), scores, mode="hybrid",
+                   calibrate=5, adaptive=True, retrain_seconds=10, background=False)
+
+    def benign(t, i):
+        return {"window_start": t, "peer_ip": f"10.0.0.{10 + i}", **dict.fromkeys(FEATURES, 1.0),
+                "n_in": 10 + i, "bytes_in": 500 + 10 * i}
+
+    for t in range(8):                                  # calibration: benign clients only
+        det.score([benign(float(t), i) for i in range(6)], float(t))
+    assert [e["event"] for e in events] == ["calibrated"] and det.novelty is not None
+
+    # A new kind of traffic the supervised model calls benign (n_in < 100) but novelty does not
+    odd = lambda t: {**benign(t, 0), "peer_ip": ATTACKER, "n_in": 90, "bytes_in": 9e6, "uniq_sport_in": 90}
+    for t in range(8, 12):
+        det.score([odd(float(t)), benign(float(t), 1)], float(t))
+    assert [e["peer"] for e in events if e["event"] == "block"] == [ATTACKER]
+
+    for t in range(12, 16):
+        det.score([benign(float(t), 2)], float(t))
+    retrained = [e for e in events if e["event"] == "retrained"]
+    assert len(retrained) == 1 and retrained[0]["pseudo_attack"] >= 2 and det.version == 1
+
+
+def test_config_file_sets_defaults_and_cli_wins(tmp_path):
+    from ddos.realtime.detector import parse_args
+    cfg = tmp_path / "d.toml"
+    cfg.write_text('iface = "s1-eth1"\nvictim = "10.0.0.100"\nmode = "hybrid"\nblock_seconds = 45\n')
+    args = parse_args(["--config", str(cfg), "--block-seconds", "20"])
+    assert (args.iface, args.victim, args.mode, args.block_seconds) == ("s1-eth1", "10.0.0.100", "hybrid", 20)
