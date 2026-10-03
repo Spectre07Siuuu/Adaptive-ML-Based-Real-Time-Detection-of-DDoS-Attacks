@@ -1,0 +1,13 @@
+,,false positive %,false positive %,false positive %,detection %,detection %,detection %,"false positive, 2-window rule %","false positive, 2-window rule %","false positive, 2-window rule %","detection, 2-window rule %","detection, 2-window rule %","detection, 2-window rule %",detection HTTP Flood %,detection HTTP Flood %,detection HTTP Flood %,detection UDP Flood %,detection UDP Flood %,detection UDP Flood %,detection SYN Flood %,detection SYN Flood %,detection SYN Flood %,detection Reflection %,detection Reflection %,detection Reflection %
+,,mean,min,max,mean,min,max,mean,min,max,mean,min,max,mean,min,max,mean,min,max,mean,min,max,mean,min,max
+dataset,detector,,,,,,,,,,,,,,,,,,,,,,,,
+cicids2017,static: supervised or novelty,3.8,1.6,6.88,96.87,96.59,97.33,0.0,0.0,0.0,85.64,85.08,86.56,96.87,96.59,97.33,,,,,,,,,
+cicids2017,adaptive: supervised or novelty,0.09,0.04,0.12,96.75,96.59,96.96,0.0,0.0,0.0,85.39,85.08,85.82,96.75,96.59,96.96,,,,,,,,,
+cicids2017,static: supervised alone,3.78,1.58,6.86,66.14,36.83,84.35,0.0,0.0,0.0,39.07,9.3,60.87,66.14,36.83,84.35,,,,,,,,,
+cicids2017,adaptive: supervised alone,0.07,0.02,0.1,86.71,82.04,94.75,0.0,0.0,0.0,71.92,66.02,81.68,86.71,82.04,94.75,,,,,,,,,
+cicids2017,novelty alone,0.02,0.02,0.02,96.59,96.59,96.59,0.0,0.0,0.0,85.08,85.08,85.08,96.59,96.59,96.59,,,,,,,,,
+cicddos2019,static: supervised or novelty,12.77,8.51,14.89,99.32,99.11,99.45,1.49,1.06,1.7,98.47,98.15,98.63,,,,97.9,97.13,98.28,99.93,99.79,100.0,99.78,99.74,99.8
+cicddos2019,adaptive: supervised or novelty,9.01,8.72,9.57,99.33,99.3,99.37,1.49,1.28,1.91,98.55,98.52,98.59,,,,97.99,97.85,98.13,99.79,99.79,99.79,99.8,99.8,99.8
+cicddos2019,static: supervised alone,4.33,0.0,6.6,96.56,95.93,96.89,0.0,0.0,0.0,94.92,94.19,95.34,,,,92.3,90.1,93.54,99.72,99.59,99.79,97.51,97.44,97.57
+cicddos2019,adaptive: supervised alone,1.21,0.85,1.91,98.75,98.71,98.82,0.21,0.0,0.43,97.84,97.78,97.89,,,,97.08,96.84,97.27,99.79,99.79,99.79,99.19,99.08,99.28
+cicddos2019,novelty alone,8.51,8.51,8.51,98.08,98.08,98.08,1.06,1.06,1.06,96.89,96.89,96.89,,,,93.26,93.26,93.26,99.79,99.79,99.79,99.74,99.74,99.74

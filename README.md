@@ -19,7 +19,7 @@ The code has two pipelines:
 | 1 | 02 Cross-dataset eval: lab + CIC-DDoS2019 + CIC-IDS2017 + Kaggle SDN | done: reports/cross_dataset |
 | 2 | 04 DL comparison: 1D-CNN, LSTM, Transformer vs RF/XGBoost | done: reports/models |
 | 3 | 03 Real-time closed-loop mitigation (OVS drop flows) | done: reports/mitigation |
-| 4 | 01 Adaptive pipeline: drift detection, online learning, novelty detection | todo |
+| 4 | 01 Adaptive pipeline: drift detection, online learning, novelty detection | done (simulation): reports/adaptive |
 | 5 | 05 Deployment-ready architecture | todo |
 
 ## Folder structure
@@ -55,6 +55,9 @@ ddos/                       Python package (run every module from the project ro
     evaluate_rf.py            v1: RF confusion matrix + ROC curves -> reports/figures/
     train_server_model.py     v1: RF on scaled features, the model used by predict_server
   preprocessing/balance_dataset.py  v1: random undersampling
+  adaptive/
+    novelty.py                kNN novelty detector fitted on one network's benign traffic
+    stream.py                 lab model replayed on a new network, static vs adaptive (phase 4)
   realtime/
     detector.py               v2: live sniffer -> windows -> model -> OVS drop flow (phase 3)
     evaluate_mitigation.py    v2: time to block, traffic stopped, false blocks per session
@@ -239,6 +242,12 @@ Binary macro-F1 %, mean ± std over 3 seeds:
 - Across datasets every model drops to 51–65%. The networks are not better at transferring
   than the trees. The boosted trees on window features transfer best and vary least
   between seeds.
+- The ± hides how unstable single transfers are. The "across" column averages six
+  train/test pairs; one pair can swing with the seed alone, e.g. HGB lab → CIC-IDS2017
+  74 / 43 / 85 and LSTM lab → CIC-DDoS2019 85 / 39 / 18 (seeds 0 / 1 / 2). The lab is
+  separable on many features, and which one a model happens to rely on decides whether it
+  transfers. Only the Random Forest on window features is stable (within 3 points), being an average
+  of 200 trees. Phase 4 is the answer to this.
 - Input matters more than architecture: the Random Forest loses 11 points across datasets when
   given the networks' packet sequences instead of the window features.
 - Per attack type, models disagree on what transfers. Trained on the lab, the window trees
@@ -293,6 +302,57 @@ the blocks it would install. Replaying lab session s3 (which the detector model 
 training, so this checks the plumbing, not accuracy): all 30 attacks were caught, median
 1.3–1.8 s after they started (6.3 s for low-rate ICMP), and no benign client window was
 flagged. The detector processed ~100k packets/s.
+
+## Phase 4: adapting to a new network
+
+Scenario: the lab-trained detector is deployed on a network it has never seen (CIC-IDS2017 or
+CIC-DDoS2019), whose windows are replayed in time order. Both detectors start with the
+lab-only model plus a novelty detector (`adaptive/novelty.py`): mean distance to the 5
+nearest windows of the network's first 30 minutes of traffic, taken without labels (neither
+dataset has an attack in that period). A window is an attack if either model says so.
+
+- **Static** never changes.
+- **Adaptive** retrains its supervised model every 10 minutes on the lab data plus
+  pseudo-labels from the stream: windows the novelty model finds normal become benign
+  examples; windows of a peer flagged by the novelty model twice in a row become attack
+  examples. No ground-truth label is used to adapt.
+
+```
+.venv/bin/python -m ddos.adaptive.stream     # ~20 min: 2 networks x 3 seeds
+```
+
+Mean [min–max] over 3 seeds; "2-window rule" counts a peer as attacking only from its second
+flagged window in a row, the rule the live detector blocks on:
+
+| Network | Detector | False positive % | Detection % | FP %, 2-window rule | Detection %, 2-window rule |
+|---|---|---|---|---|---|
+| CIC-IDS2017 (HTTP flood, new to the lab model) | static, supervised alone | 3.8 [1.6–6.9] | 66.1 [36.8–84.3] | 0.0 | 39.1 [9.3–60.9] |
+| | adaptive, supervised alone | **0.1** [0.0–0.1] | **86.7** [82.0–94.8] | 0.0 | 71.9 [66.0–81.7] |
+| | novelty alone | 0.0 | 96.6 | 0.0 | 85.1 |
+| | adaptive, supervised or novelty | 0.1 | 96.7 | 0.0 | 85.4 |
+| CIC-DDoS2019 | static, supervised alone | 4.3 [0.0–6.6] | 96.6 [95.9–96.9] | 0.0 | 94.9 |
+| | adaptive, supervised alone | **1.2** [0.9–1.9] | **98.8** [98.7–98.8] | 0.2 [0.0–0.4] | 97.8 |
+| | novelty alone | 8.5 | 98.1 | 1.1 | 96.9 |
+| | adaptive, supervised or novelty | 9.0 | 99.3 | 1.5 | 98.5 |
+
+![Static vs adaptive false positives](reports/adaptive/adaptation.png)
+
+- On CIC-IDS2017 the novelty detector, which never saw an attack, catches 96.6% of the
+  HTTP flood with no false positives; the lab model on its own catches anywhere from 37% to
+  84% depending on the seed. Learning from the novelty model's alerts, the adaptive model
+  reaches 87% on its own, varies far less between seeds, and drops its false positives
+  from 3.8% to 0.1% within the first 20 minutes.
+- On CIC-DDoS2019 the lab model already transfers; adapting still raises detection
+  (96.6 → 98.8%) and cuts window false positives (4.3 → 1.2%).
+- The novelty detector is only as good as its calibration. CIC-DDoS2019's victim exchanged
+  just 23 windows of traffic in the first 30 minutes, so 8.5% of its later benign windows look
+  new (1.1% with the 2-window rule). There the adaptive supervised model alone is the better
+  detector. A longer calibration, or refreshing it with traffic both models accept, would help.
+- Pseudo-labels can reinforce the novelty model's own mistakes: an attack it misses is learned
+  as benign. Here the alerts were reliable; in deployment, confirmed incidents (or an analyst)
+  should feed the attack pool.
+- This is a replay, not yet the live detector: adding the novelty model and the retraining
+  loop to `realtime/detector.py` is part of phase 5.
 
 ## v1 pipeline
 

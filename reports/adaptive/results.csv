@@ -1,0 +1,31 @@
+dataset,seed,detector,false positive %,detection %,"false positive, 2-window rule %","detection, 2-window rule %",detection HTTP Flood %,calibration windows,attacks in calibration,retrains,pseudo-attack windows,detection UDP Flood %,detection SYN Flood %,detection Reflection %
+cicids2017,0,static: supervised or novelty,2.93,96.59,0.0,85.08,96.59,294,0,45,924,,,
+cicids2017,0,adaptive: supervised or novelty,0.1,96.59,0.0,85.08,96.59,294,0,45,924,,,
+cicids2017,0,static: supervised alone,2.91,36.83,0.0,9.3,36.83,294,0,45,924,,,
+cicids2017,0,adaptive: supervised alone,0.08,82.04,0.0,66.02,82.04,294,0,45,924,,,
+cicids2017,0,novelty alone,0.02,96.59,0.0,85.08,96.59,294,0,45,924,,,
+cicids2017,1,static: supervised or novelty,6.88,97.33,0.0,86.56,97.33,294,0,45,924,,,
+cicids2017,1,adaptive: supervised or novelty,0.12,96.96,0.0,85.82,96.96,294,0,45,924,,,
+cicids2017,1,static: supervised alone,6.86,84.35,0.0,60.87,84.35,294,0,45,924,,,
+cicids2017,1,adaptive: supervised alone,0.1,83.33,0.0,68.05,83.33,294,0,45,924,,,
+cicids2017,1,novelty alone,0.02,96.59,0.0,85.08,96.59,294,0,45,924,,,
+cicids2017,2,static: supervised or novelty,1.6,96.69,0.0,85.27,96.69,294,0,45,924,,,
+cicids2017,2,adaptive: supervised or novelty,0.04,96.69,0.0,85.27,96.69,294,0,45,924,,,
+cicids2017,2,static: supervised alone,1.58,77.26,0.0,47.05,77.26,294,0,45,924,,,
+cicids2017,2,adaptive: supervised alone,0.02,94.75,0.0,81.68,94.75,294,0,45,924,,,
+cicids2017,2,novelty alone,0.02,96.59,0.0,85.08,96.59,294,0,45,924,,,
+cicddos2019,0,static: supervised or novelty,8.51,99.11,1.06,98.15,,23,0,45,2625,97.13,99.79,99.8
+cicddos2019,0,adaptive: supervised or novelty,8.72,99.3,1.28,98.59,,23,0,45,2625,97.85,99.79,99.8
+cicddos2019,0,static: supervised alone,0.0,95.93,0.0,94.19,,23,0,45,2625,90.1,99.59,97.44
+cicddos2019,0,adaptive: supervised alone,0.85,98.71,0.0,97.89,,23,0,45,2625,96.84,99.79,99.21
+cicddos2019,0,novelty alone,8.51,98.08,1.06,96.89,,23,0,45,2625,93.26,99.79,99.74
+cicddos2019,1,static: supervised or novelty,14.89,99.41,1.7,98.63,,23,0,45,2625,98.28,100.0,99.74
+cicddos2019,1,adaptive: supervised or novelty,8.72,99.33,1.28,98.52,,23,0,45,2625,97.99,99.79,99.8
+cicddos2019,1,static: supervised alone,6.6,96.89,0.0,95.34,,23,0,45,2625,93.54,99.79,97.51
+cicddos2019,1,adaptive: supervised alone,0.85,98.82,0.21,97.86,,23,0,45,2625,97.13,99.79,99.28
+cicddos2019,1,novelty alone,8.51,98.08,1.06,96.89,,23,0,45,2625,93.26,99.79,99.74
+cicddos2019,2,static: supervised or novelty,14.89,99.45,1.7,98.63,,23,0,45,2625,98.28,100.0,99.8
+cicddos2019,2,adaptive: supervised or novelty,9.57,99.37,1.91,98.52,,23,0,45,2625,98.13,99.79,99.8
+cicddos2019,2,static: supervised alone,6.38,96.86,0.0,95.23,,23,0,45,2625,93.26,99.79,97.57
+cicddos2019,2,adaptive: supervised alone,1.91,98.74,0.43,97.78,,23,0,45,2625,97.27,99.79,99.08
+cicddos2019,2,novelty alone,8.51,98.08,1.06,96.89,,23,0,45,2625,93.26,99.79,99.74
