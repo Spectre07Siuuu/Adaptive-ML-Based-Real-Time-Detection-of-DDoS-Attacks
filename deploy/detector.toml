@@ -12,7 +12,7 @@ consecutive = 2              # flagged windows in a row before a peer is blocked
 block_seconds = 60           # OVS lifts the block after this; a peer still attacking is blocked again
 
 mode = "hybrid"              # "supervised", or "hybrid" = supervised or novelty
-calibrate = 120              # seconds of traffic that define normal for the novelty detector
+calibrate = 300              # seconds of traffic that define normal; shorter misses periodic jobs (backups, transfers)
 adaptive = true              # retrain on pseudo-labels from the novelty detector
 retrain_seconds = 600
 

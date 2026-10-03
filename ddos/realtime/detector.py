@@ -94,7 +94,7 @@ class Mitigator:
 
 class Detector:
     def __init__(self, bundle, victim, mitigator, threshold, log, scores, mode="supervised",
-                 calibrate=60.0, adaptive=False, retrain_seconds=120.0, background=True):
+                 calibrate=300.0, adaptive=False, retrain_seconds=120.0, background=True):
         self.model, self.features = bundle["model"], bundle["features"]
         self.window = bundle["window"]
         self.agg = WindowAggregator([victim], self.window)
@@ -211,7 +211,7 @@ def parse_args(argv=None):
     parser.add_argument("--block-seconds", type=int, default=60)
     parser.add_argument("--whitelist", nargs="*", default=[], help="addresses never blocked")
     parser.add_argument("--mode", choices=["supervised", "hybrid"], default="supervised")
-    parser.add_argument("--calibrate", type=float, default=60, help="seconds of traffic that define normal")
+    parser.add_argument("--calibrate", type=float, default=300, help="seconds of traffic that define normal")
     parser.add_argument("--adaptive", action="store_true", help="retrain on pseudo-labels (hybrid mode)")
     parser.add_argument("--retrain-seconds", type=float, default=120)
     parser.add_argument("--log", default="detector.jsonl")

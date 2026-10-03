@@ -103,7 +103,9 @@ def start_detector(out, logs, iface, args):
         proc = subprocess.Popen([str(python), "-m", "ddos.realtime.detector", "--iface", iface,
                                  "--victim", VICTIM[1], "--switch", "s1",
                                  "--block-seconds", str(args.block_seconds), "--mode", args.detector_mode,
-                                 "--calibrate", str(WARMUP - 15),   # learn normal before the first attack
+                                 # Attacks start after 60 s; calibration keeps only the windows the
+                                 # supervised model calls benign, and 45 s proved too short (m2)
+                                 "--calibrate", "300",
                                  *(["--adaptive"] if args.adaptive else []),
                                  "--log", str(log), "--scores", str(out / "scores.csv")],
                                 cwd=str(ROOT), stdout=console, stderr=console)
