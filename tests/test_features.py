@@ -124,7 +124,7 @@ def test_extract_session_labels_by_ip_and_time(tmp_path: Path):
         "session,round,attacker,ip,attack,label,rate,pps,size,port,start_ts,end_ts\n"
         f"t1,1,a1,10.0.0.21,syn,3,low,50,0,80,{t0 + 5},{t0 + 8}\n")
 
-    df, stats = build_dataset.extract_session(tmp_path)
+    df, flows, stats = build_dataset.extract_session(tmp_path)
     attack = df[df["label"] == 3]
     assert sorted(attack["window_start"]) == [t0 + 5, t0 + 6, t0 + 7]
     assert set(attack["peer_ip"]) == {"10.0.0.21"} and set(attack["round"]) == {1}
@@ -134,6 +134,9 @@ def test_extract_session_labels_by_ip_and_time(tmp_path: Path):
     benign_rounds = df[df["label"] == 0].set_index("window_start")["round"]
     assert benign_rounds[t0 + 2] == 0 and benign_rounds[t0 + 4] == 1 and benign_rounds[t0 + 12] == 1
     assert (df["session"] == "t1").all()
+    attack_flows = flows[flows["label"] == 3]
+    assert set(attack_flows["peer_ip"]) == {"10.0.0.21"} and (attack_flows["pairflow"] == 1).all()
+    assert attack_flows["pktrate"].sum() == pytest.approx(150 / 30)
 
 
 # ---------- lab/scenario.py ----------
@@ -164,3 +167,22 @@ def test_attack_commands():
         assert cmd[0] == "hping3" and cmd[-1] == VICTIM
         assert cmd[cmd.index("-i") + 1] == f"u{1_000_000 // RATES[e.rate]}"
         assert {"syn": "-S", "udp": "--udp", "icmp": "--icmp"}[e.attack] in cmd
+
+
+# ---------- flows.py ----------
+
+def test_flow_view_per_directed_flow():
+    from ddos.features.flows import FlowAggregator
+    agg = FlowAggregator([VICTIM])                                   # 30 s slots
+    for ts in (1.0, 2.0, 3.0):
+        agg.add(P(ts, "10.0.0.21", VICTIM, proto=UDP, size=100))
+    agg.add(P(4.0, VICTIM, "10.0.0.21", proto=UDP, size=60))         # reply: pair flow
+    agg.add(P(5.0, "10.0.0.11", VICTIM, proto=TCP, size=40))
+    rows = {r["peer_ip"]: r for r in agg.add(P(31.0, "10.0.0.11", VICTIM))}
+    assert set(rows) == {"10.0.0.21", "10.0.0.11"}
+    udp = rows["10.0.0.21"]
+    assert udp["pktrate"] == pytest.approx(3 / 30) and udp["mean_size"] == 114   # + Ethernet
+    assert udp["byterate"] == pytest.approx(342 / 30)
+    assert (udp["pairflow"], udp["proto_udp"], udp["proto_tcp"], udp["window_start"]) == (1, 1, 0, 0.0)
+    assert rows["10.0.0.11"]["pairflow"] == 0 and rows["10.0.0.11"]["proto_tcp"] == 1
+    assert [r["window_start"] for r in agg.flush()] == [30.0]

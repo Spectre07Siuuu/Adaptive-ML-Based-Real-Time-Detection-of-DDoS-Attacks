@@ -37,7 +37,7 @@ class Packet:
     flags: int = 0  # TCP flags, 0 for other protocols
 
 
-def _ipv4_offset(buf, linktype):
+def ipv4_offset(buf, linktype):
     """Byte offset of the IPv4 header, or None if the frame is not IPv4."""
     if linktype == DLT_EN10MB:
         off, ethertype = 14, struct.unpack_from("!H", buf, 12)[0]
@@ -57,7 +57,7 @@ def _ipv4_offset(buf, linktype):
 def parse_frame(buf, ts, linktype):
     """Return a Packet for an IPv4 TCP/UDP/ICMP frame, else None (ARP, IPv6, truncated...)."""
     try:
-        off = _ipv4_offset(buf, linktype)
+        off = ipv4_offset(buf, linktype)
         if off is None or buf[off] >> 4 != 4:
             return None
         ihl = (buf[off] & 0x0F) * 4

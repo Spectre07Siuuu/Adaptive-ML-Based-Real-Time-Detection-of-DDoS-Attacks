@@ -1,0 +1,148 @@
+Model,Trained on,Test,Attack,Detection %
+Random Forest,lab only,lab,ICMP Flood,100.0
+Random Forest,lab only,lab,UDP Flood,100.0
+Random Forest,lab only,lab,SYN Flood,100.0
+Random Forest,lab only,cicids2017,HTTP Flood,0.29
+Random Forest,lab only,cicddos2019,UDP Flood,84.9
+Random Forest,lab only,cicddos2019,SYN Flood,97.37
+Random Forest,lab only,cicddos2019,Reflection,90.32
+Random Forest,cicids2017 only,lab,ICMP Flood,30.59
+Random Forest,cicids2017 only,lab,UDP Flood,22.65
+Random Forest,cicids2017 only,lab,SYN Flood,100.0
+Random Forest,cicids2017 only,cicids2017,HTTP Flood,100.0
+Random Forest,cicids2017 only,cicddos2019,UDP Flood,0.0
+Random Forest,cicids2017 only,cicddos2019,SYN Flood,97.37
+Random Forest,cicids2017 only,cicddos2019,Reflection,0.0
+Random Forest,cicddos2019 only,lab,ICMP Flood,0.0
+Random Forest,cicddos2019 only,lab,UDP Flood,100.0
+Random Forest,cicddos2019 only,lab,SYN Flood,100.0
+Random Forest,cicddos2019 only,cicids2017,HTTP Flood,98.57
+Random Forest,cicddos2019 only,cicddos2019,UDP Flood,98.98
+Random Forest,cicddos2019 only,cicddos2019,SYN Flood,98.68
+Random Forest,cicddos2019 only,cicddos2019,Reflection,100.0
+Random Forest,all but lab,lab,ICMP Flood,30.59
+Random Forest,all but lab,lab,UDP Flood,100.0
+Random Forest,all but lab,lab,SYN Flood,100.0
+Random Forest,all but lab,cicids2017,HTTP Flood,99.71
+Random Forest,all but lab,cicddos2019,UDP Flood,97.76
+Random Forest,all but lab,cicddos2019,SYN Flood,97.37
+Random Forest,all but lab,cicddos2019,Reflection,100.0
+Random Forest,all but cicids2017,lab,ICMP Flood,100.0
+Random Forest,all but cicids2017,lab,UDP Flood,100.0
+Random Forest,all but cicids2017,lab,SYN Flood,100.0
+Random Forest,all but cicids2017,cicids2017,HTTP Flood,64.0
+Random Forest,all but cicids2017,cicddos2019,UDP Flood,97.55
+Random Forest,all but cicids2017,cicddos2019,SYN Flood,97.37
+Random Forest,all but cicids2017,cicddos2019,Reflection,100.0
+Random Forest,all but cicddos2019,lab,ICMP Flood,100.0
+Random Forest,all but cicddos2019,lab,UDP Flood,100.0
+Random Forest,all but cicddos2019,lab,SYN Flood,100.0
+Random Forest,all but cicddos2019,cicids2017,HTTP Flood,99.71
+Random Forest,all but cicddos2019,cicddos2019,UDP Flood,4.49
+Random Forest,all but cicddos2019,cicddos2019,SYN Flood,97.37
+Random Forest,all but cicddos2019,cicddos2019,Reflection,0.0
+Random Forest,all datasets,lab,ICMP Flood,100.0
+Random Forest,all datasets,lab,UDP Flood,100.0
+Random Forest,all datasets,lab,SYN Flood,100.0
+Random Forest,all datasets,cicids2017,HTTP Flood,99.71
+Random Forest,all datasets,cicddos2019,UDP Flood,97.55
+Random Forest,all datasets,cicddos2019,SYN Flood,97.37
+Random Forest,all datasets,cicddos2019,Reflection,100.0
+KNN,lab only,lab,ICMP Flood,100.0
+KNN,lab only,lab,UDP Flood,100.0
+KNN,lab only,lab,SYN Flood,100.0
+KNN,lab only,cicids2017,HTTP Flood,0.29
+KNN,lab only,cicddos2019,UDP Flood,1.43
+KNN,lab only,cicddos2019,SYN Flood,1.32
+KNN,lab only,cicddos2019,Reflection,0.0
+KNN,cicids2017 only,lab,ICMP Flood,6.91
+KNN,cicids2017 only,lab,UDP Flood,63.76
+KNN,cicids2017 only,lab,SYN Flood,58.63
+KNN,cicids2017 only,cicids2017,HTTP Flood,99.43
+KNN,cicids2017 only,cicddos2019,UDP Flood,0.0
+KNN,cicids2017 only,cicddos2019,SYN Flood,0.0
+KNN,cicids2017 only,cicddos2019,Reflection,0.0
+KNN,cicddos2019 only,lab,ICMP Flood,100.0
+KNN,cicddos2019 only,lab,UDP Flood,81.53
+KNN,cicddos2019 only,lab,SYN Flood,100.0
+KNN,cicddos2019 only,cicids2017,HTTP Flood,46.86
+KNN,cicddos2019 only,cicddos2019,UDP Flood,98.78
+KNN,cicddos2019 only,cicddos2019,SYN Flood,98.68
+KNN,cicddos2019 only,cicddos2019,Reflection,100.0
+KNN,all but lab,lab,ICMP Flood,0.0
+KNN,all but lab,lab,UDP Flood,81.53
+KNN,all but lab,lab,SYN Flood,0.0
+KNN,all but lab,cicids2017,HTTP Flood,99.14
+KNN,all but lab,cicddos2019,UDP Flood,98.98
+KNN,all but lab,cicddos2019,SYN Flood,98.68
+KNN,all but lab,cicddos2019,Reflection,100.0
+KNN,all but cicids2017,lab,ICMP Flood,93.42
+KNN,all but cicids2017,lab,UDP Flood,100.0
+KNN,all but cicids2017,lab,SYN Flood,100.0
+KNN,all but cicids2017,cicids2017,HTTP Flood,0.86
+KNN,all but cicids2017,cicddos2019,UDP Flood,95.92
+KNN,all but cicids2017,cicddos2019,SYN Flood,97.37
+KNN,all but cicids2017,cicddos2019,Reflection,100.0
+KNN,all but cicddos2019,lab,ICMP Flood,100.0
+KNN,all but cicddos2019,lab,UDP Flood,100.0
+KNN,all but cicddos2019,lab,SYN Flood,100.0
+KNN,all but cicddos2019,cicids2017,HTTP Flood,99.43
+KNN,all but cicddos2019,cicddos2019,UDP Flood,0.0
+KNN,all but cicddos2019,cicddos2019,SYN Flood,0.0
+KNN,all but cicddos2019,cicddos2019,Reflection,0.0
+KNN,all datasets,lab,ICMP Flood,93.42
+KNN,all datasets,lab,UDP Flood,100.0
+KNN,all datasets,lab,SYN Flood,100.0
+KNN,all datasets,cicids2017,HTTP Flood,99.14
+KNN,all datasets,cicddos2019,UDP Flood,95.92
+KNN,all datasets,cicddos2019,SYN Flood,97.37
+KNN,all datasets,cicddos2019,Reflection,100.0
+SVM,lab only,lab,ICMP Flood,92.43
+SVM,lab only,lab,UDP Flood,100.0
+SVM,lab only,lab,SYN Flood,100.0
+SVM,lab only,cicids2017,HTTP Flood,62.57
+SVM,lab only,cicddos2019,UDP Flood,0.0
+SVM,lab only,cicddos2019,SYN Flood,0.0
+SVM,lab only,cicddos2019,Reflection,0.0
+SVM,cicids2017 only,lab,ICMP Flood,0.0
+SVM,cicids2017 only,lab,UDP Flood,0.0
+SVM,cicids2017 only,lab,SYN Flood,0.0
+SVM,cicids2017 only,cicids2017,HTTP Flood,99.43
+SVM,cicids2017 only,cicddos2019,UDP Flood,0.0
+SVM,cicids2017 only,cicddos2019,SYN Flood,0.0
+SVM,cicids2017 only,cicddos2019,Reflection,0.0
+SVM,cicddos2019 only,lab,ICMP Flood,57.24
+SVM,cicddos2019 only,lab,UDP Flood,81.53
+SVM,cicddos2019 only,lab,SYN Flood,0.0
+SVM,cicddos2019 only,cicids2017,HTTP Flood,0.86
+SVM,cicddos2019 only,cicddos2019,UDP Flood,97.14
+SVM,cicddos2019 only,cicddos2019,SYN Flood,97.37
+SVM,cicddos2019 only,cicddos2019,Reflection,100.0
+SVM,all but lab,lab,ICMP Flood,0.0
+SVM,all but lab,lab,UDP Flood,81.53
+SVM,all but lab,lab,SYN Flood,0.0
+SVM,all but lab,cicids2017,HTTP Flood,98.57
+SVM,all but lab,cicddos2019,UDP Flood,97.35
+SVM,all but lab,cicddos2019,SYN Flood,97.37
+SVM,all but lab,cicddos2019,Reflection,100.0
+SVM,all but cicids2017,lab,ICMP Flood,94.41
+SVM,all but cicids2017,lab,UDP Flood,100.0
+SVM,all but cicids2017,lab,SYN Flood,100.0
+SVM,all but cicids2017,cicids2017,HTTP Flood,55.43
+SVM,all but cicids2017,cicddos2019,UDP Flood,97.14
+SVM,all but cicids2017,cicddos2019,SYN Flood,98.68
+SVM,all but cicids2017,cicddos2019,Reflection,100.0
+SVM,all but cicddos2019,lab,ICMP Flood,92.43
+SVM,all but cicddos2019,lab,UDP Flood,100.0
+SVM,all but cicddos2019,lab,SYN Flood,100.0
+SVM,all but cicddos2019,cicids2017,HTTP Flood,98.29
+SVM,all but cicddos2019,cicddos2019,UDP Flood,0.0
+SVM,all but cicddos2019,cicddos2019,SYN Flood,0.0
+SVM,all but cicddos2019,cicddos2019,Reflection,0.0
+SVM,all datasets,lab,ICMP Flood,93.42
+SVM,all datasets,lab,UDP Flood,100.0
+SVM,all datasets,lab,SYN Flood,100.0
+SVM,all datasets,cicids2017,HTTP Flood,98.29
+SVM,all datasets,cicddos2019,UDP Flood,96.73
+SVM,all datasets,cicddos2019,SYN Flood,98.68
+SVM,all datasets,cicddos2019,Reflection,100.0

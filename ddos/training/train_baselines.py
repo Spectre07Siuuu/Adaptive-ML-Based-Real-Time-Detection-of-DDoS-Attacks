@@ -30,7 +30,7 @@ from sklearn.pipeline import make_pipeline
 from sklearn.preprocessing import StandardScaler
 from sklearn.svm import SVC
 
-from ddos.config import PROCESSED_DIR, MODELS_DIR, REPORTS_DIR, LABEL_NAMES, WINDOW_SECONDS
+from ddos.config import PROCESSED_DIR, MODELS_DIR, REPORTS_DIR, ALL_LABEL_NAMES, WINDOW_SECONDS
 from ddos.features.window import FEATURES
 
 DATA = PROCESSED_DIR / "lab_windows.csv"
@@ -88,7 +88,8 @@ def main():
     OUT_REPORTS.mkdir(parents=True, exist_ok=True)
     (OUT_REPORTS / "figures").mkdir(exist_ok=True)
     OUT_MODELS.mkdir(parents=True, exist_ok=True)
-    label_ids, label_names = list(LABEL_NAMES), list(LABEL_NAMES.values())
+    label_ids = sorted(df["label"].unique())
+    label_names = [ALL_LABEL_NAMES[i] for i in label_ids]
     cv = StratifiedGroupKFold(n_splits=5, shuffle=True, random_state=42)
 
     results, reports, trained = [], [], {}
@@ -135,7 +136,8 @@ def main():
 
         # Everything the live detector needs to use the model the same way
         joblib.dump({"model": model, "features": FEATURES, "window": WINDOW_SECONDS,
-                     "labels": LABEL_NAMES, "train_sessions": sorted(df.loc[train, "session"].unique())},
+                     "labels": {i: ALL_LABEL_NAMES[i] for i in label_ids},
+                     "train_sessions": sorted(df.loc[train, "session"].unique())},
                     OUT_MODELS / f"{slug}.joblib")
 
     table = pd.DataFrame(results)

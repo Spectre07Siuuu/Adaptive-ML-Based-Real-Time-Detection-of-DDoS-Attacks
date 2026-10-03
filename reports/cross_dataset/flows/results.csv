@@ -1,0 +1,109 @@
+Model,Trained on,Test,Macro F1 %,Detection %,False Positive %,Train Time(s)
+Random Forest,lab only,lab,98.62,95.24,0.0,0.43
+Random Forest,lab only,cicids2017,100.0,100.0,0.0,0.43
+Random Forest,lab only,cicddos2019,67.74,35.71,0.0,0.43
+Random Forest,lab only,sdn,61.74,76.26,41.75,0.43
+Random Forest,cicids2017 only,lab,90.26,88.89,3.37,0.44
+Random Forest,cicids2017 only,cicids2017,100.0,100.0,0.0,0.44
+Random Forest,cicids2017 only,cicddos2019,66.57,33.93,0.0,0.44
+Random Forest,cicids2017 only,sdn,60.9,72.38,40.98,0.44
+Random Forest,cicddos2019 only,lab,29.12,100.0,80.0,0.32
+Random Forest,cicddos2019 only,cicids2017,45.13,100.0,34.82,0.32
+Random Forest,cicddos2019 only,cicddos2019,94.96,100.0,8.05,0.32
+Random Forest,cicddos2019 only,sdn,33.28,98.97,88.84,0.32
+Random Forest,sdn only,lab,40.13,82.54,61.47,0.79
+Random Forest,sdn only,cicids2017,36.82,92.86,50.56,0.79
+Random Forest,sdn only,cicddos2019,59.23,39.29,20.69,0.79
+Random Forest,sdn only,sdn,80.99,72.69,10.71,0.79
+Random Forest,all but lab,lab,52.5,88.89,44.21,0.88
+Random Forest,all but lab,cicids2017,96.35,92.86,0.16,0.88
+Random Forest,all but lab,cicddos2019,89.59,83.93,5.75,0.88
+Random Forest,all but lab,sdn,80.99,72.69,10.71,0.88
+Random Forest,all but cicids2017,lab,96.79,92.06,0.42,2.21
+Random Forest,all but cicids2017,cicids2017,45.99,92.86,32.27,2.21
+Random Forest,all but cicids2017,cicddos2019,95.67,100.0,6.9,2.21
+Random Forest,all but cicids2017,sdn,80.85,72.49,10.79,2.21
+Random Forest,all but cicddos2019,lab,97.67,92.06,0.0,1.91
+Random Forest,all but cicddos2019,cicids2017,98.11,92.86,0.0,1.91
+Random Forest,all but cicddos2019,cicddos2019,70.03,39.29,0.0,1.91
+Random Forest,all but cicddos2019,sdn,80.91,72.63,10.79,1.91
+Random Forest,all but sdn,lab,98.66,98.41,0.42,0.46
+Random Forest,all but sdn,cicids2017,96.59,100.0,0.32,0.46
+Random Forest,all but sdn,cicddos2019,91.85,87.5,4.6,0.46
+Random Forest,all but sdn,sdn,61.9,76.76,41.77,0.46
+Random Forest,all datasets,lab,97.67,92.06,0.0,2.32
+Random Forest,all datasets,cicids2017,96.59,100.0,0.32,2.32
+Random Forest,all datasets,cicddos2019,90.29,83.93,4.6,2.32
+Random Forest,all datasets,sdn,80.81,72.49,10.84,2.32
+KNN,lab only,lab,97.19,90.48,0.0,0.01
+KNN,lab only,cicids2017,100.0,100.0,0.0,0.01
+KNN,lab only,cicddos2019,67.74,35.71,0.0,0.01
+KNN,lab only,sdn,68.48,74.74,30.29,0.01
+KNN,cicids2017 only,lab,68.49,77.78,18.74,0.0
+KNN,cicids2017 only,cicids2017,98.11,92.86,0.0,0.0
+KNN,cicids2017 only,cicddos2019,66.57,33.93,0.0,0.0
+KNN,cicids2017 only,sdn,56.0,45.54,31.93,0.0
+KNN,cicddos2019 only,lab,59.49,100.0,37.05,0.0
+KNN,cicddos2019 only,cicids2017,38.37,100.0,48.17,0.0
+KNN,cicddos2019 only,cicddos2019,94.0,87.5,1.15,0.0
+KNN,cicddos2019 only,sdn,41.5,95.69,78.67,0.0
+KNN,sdn only,lab,40.87,69.84,57.05,0.02
+KNN,sdn only,cicids2017,1.98,92.86,100.0,0.02
+KNN,sdn only,cicddos2019,16.37,50.0,100.0,0.02
+KNN,sdn only,sdn,79.92,68.31,9.71,0.02
+KNN,all but lab,lab,78.99,88.89,11.37,0.03
+KNN,all but lab,cicids2017,93.17,92.86,0.48,0.03
+KNN,all but lab,cicddos2019,88.41,75.0,1.15,0.03
+KNN,all but lab,sdn,79.7,68.09,9.88,0.03
+KNN,all but cicids2017,lab,95.31,87.3,0.42,0.02
+KNN,all but cicids2017,cicids2017,56.27,92.86,15.42,0.02
+KNN,all but cicids2017,cicddos2019,94.0,87.5,1.15,0.02
+KNN,all but cicids2017,sdn,79.43,67.45,9.88,0.02
+KNN,all but cicddos2019,lab,93.34,82.54,0.63,0.03
+KNN,all but cicddos2019,cicids2017,98.11,92.86,0.0,0.03
+KNN,all but cicddos2019,cicddos2019,67.74,35.71,0.0,0.03
+KNN,all but cicddos2019,sdn,79.6,67.87,9.89,0.03
+KNN,all but sdn,lab,97.19,90.48,0.0,0.01
+KNN,all but sdn,cicids2017,96.59,100.0,0.32,0.01
+KNN,all but sdn,cicddos2019,89.24,76.79,1.15,0.01
+KNN,all but sdn,sdn,68.62,74.82,30.11,0.01
+KNN,all datasets,lab,95.31,87.3,0.42,0.03
+KNN,all datasets,cicids2017,94.71,92.86,0.32,0.03
+KNN,all datasets,cicddos2019,88.41,75.0,1.15,0.03
+KNN,all datasets,sdn,79.43,67.45,9.88,0.03
+SVM,lab only,lab,94.29,84.13,0.42,0.02
+SVM,lab only,cicids2017,98.11,92.86,0.0,0.02
+SVM,lab only,cicddos2019,70.03,39.29,0.0,0.02
+SVM,lab only,sdn,60.47,45.1,23.78,0.02
+SVM,cicids2017 only,lab,58.53,12.7,0.0,0.01
+SVM,cicids2017 only,cicids2017,100.0,100.0,0.0,0.01
+SVM,cicids2017 only,cicddos2019,37.83,0.0,0.0,0.01
+SVM,cicids2017 only,sdn,59.34,40.53,22.03,0.01
+SVM,cicddos2019 only,lab,43.29,66.67,52.21,0.01
+SVM,cicddos2019 only,cicids2017,49.45,0.0,0.0,0.01
+SVM,cicddos2019 only,cicddos2019,88.3,73.21,0.0,0.01
+SVM,cicddos2019 only,sdn,39.79,56.23,66.05,0.01
+SVM,sdn only,lab,39.11,84.13,63.37,3.86
+SVM,sdn only,cicids2017,2.13,100.0,100.0,3.86
+SVM,sdn only,cicddos2019,20.56,66.07,100.0,3.86
+SVM,sdn only,sdn,74.58,79.51,23.63,3.86
+SVM,all but lab,lab,68.92,79.37,18.74,5.91
+SVM,all but lab,cicids2017,100.0,100.0,0.0,5.91
+SVM,all but lab,cicddos2019,70.03,39.29,0.0,5.91
+SVM,all but lab,sdn,74.12,77.94,23.45,5.91
+SVM,all but cicids2017,lab,60.08,80.95,30.53,6.96
+SVM,all but cicids2017,cicids2017,16.6,100.0,83.62,6.96
+SVM,all but cicids2017,cicddos2019,48.19,66.07,63.22,6.96
+SVM,all but cicids2017,sdn,74.42,78.76,23.45,6.96
+SVM,all but cicddos2019,lab,96.3,90.48,0.42,6.06
+SVM,all but cicddos2019,cicids2017,100.0,100.0,0.0,6.06
+SVM,all but cicddos2019,cicddos2019,70.03,39.29,0.0,6.06
+SVM,all but cicddos2019,sdn,74.23,78.65,23.69,6.06
+SVM,all but sdn,lab,58.23,93.65,37.05,0.22
+SVM,all but sdn,cicids2017,98.11,92.86,0.0,0.22
+SVM,all but sdn,cicddos2019,88.3,73.21,0.0,0.22
+SVM,all but sdn,sdn,33.2,65.37,79.31,0.22
+SVM,all datasets,lab,93.24,80.95,0.42,7.19
+SVM,all datasets,cicids2017,100.0,100.0,0.0,7.19
+SVM,all datasets,cicddos2019,70.03,39.29,0.0,7.19
+SVM,all datasets,sdn,74.18,77.25,22.99,7.19

@@ -1,0 +1,8 @@
+Trained on,lab,cicids2017,cicddos2019
+lab only,100.0,0.29,0.95
+cicids2017 only,43.26,99.43,0.0
+cicddos2019 only,94.28,46.86,99.17
+all but lab,25.24,99.14,99.29
+all but cicids2017,97.84,0.86,97.4
+all but cicddos2019,100.0,99.43,0.0
+all datasets,97.84,99.14,97.4

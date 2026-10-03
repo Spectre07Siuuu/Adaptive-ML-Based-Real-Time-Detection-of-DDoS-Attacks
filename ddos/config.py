@@ -13,9 +13,14 @@ REPORTS_DIR   = ROOT / "reports"
 FIGURES_DIR   = REPORTS_DIR / "figures"
 
 LABEL_NAMES = {0: "Normal", 1: "ICMP Flood", 2: "UDP Flood", 3: "SYN Flood"}
+# Attack types that occur only in the public datasets (ddos/datasets/catalog.py)
+ALL_LABEL_NAMES = {**LABEL_NAMES, 4: "HTTP Flood", 5: "Reflection"}
 
 # Mininet lab captures (ddos/lab): one folder per session with capture.pcap, events.csv, meta.json
 LAB_PCAP_DIR = PCAP_DIR / "lab"
+
+# Public datasets (ddos/datasets): one folder per dataset, sliced to the victim's traffic
+EXTERNAL_DIR = DATA_DIR / "raw" / "external"
 
 # Per-peer time windows, shared by offline extraction and the live detector
 WINDOW_SECONDS = 1.0
