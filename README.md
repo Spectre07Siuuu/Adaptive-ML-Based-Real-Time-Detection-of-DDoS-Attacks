@@ -15,7 +15,7 @@ The code has two pipelines:
 
 | Phase | Proposal contribution | Status |
 |---|---|---|
-| 0 | Clean data and honest evaluation (prerequisite) | code done, lab captures pending |
+| 0 | Clean data and honest evaluation (prerequisite) | done: 3 lab sessions, baselines in reports/lab |
 | 1 | 02 Cross-dataset eval: lab + CIC-DDoS2019 + CIC-IDS2017 + Kaggle SDN | todo |
 | 2 | 04 DL comparison: 1D-CNN, LSTM, Transformer vs RF/XGBoost | todo |
 | 3 | 03 Real-time closed-loop mitigation (OVS drop flows) | todo |

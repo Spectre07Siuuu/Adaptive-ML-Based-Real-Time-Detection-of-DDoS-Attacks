@@ -1,0 +1,4 @@
+Model,Accuracy %,Macro F1 %,CV Macro F1 %,Detection %,False Positive %,Train Time(s),Pred (us/window)
+Random Forest,100.0,100.0,99.98,100.0,0.0,0.72,9.36
+KNN,99.77,98.69,99.92,100.0,0.02,0.01,36.1
+SVM,99.66,98.92,97.77,97.41,0.0,0.98,52.26
