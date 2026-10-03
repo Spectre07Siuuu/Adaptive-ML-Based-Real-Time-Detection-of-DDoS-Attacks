@@ -13,3 +13,9 @@ REPORTS_DIR   = ROOT / "reports"
 FIGURES_DIR   = REPORTS_DIR / "figures"
 
 LABEL_NAMES = {0: "Normal", 1: "ICMP Flood", 2: "UDP Flood", 3: "SYN Flood"}
+
+# Mininet lab captures (ddos/lab): one folder per session with capture.pcap, events.csv, meta.json
+LAB_PCAP_DIR = PCAP_DIR / "lab"
+
+# Per-peer time windows, shared by offline extraction and the live detector
+WINDOW_SECONDS = 1.0
