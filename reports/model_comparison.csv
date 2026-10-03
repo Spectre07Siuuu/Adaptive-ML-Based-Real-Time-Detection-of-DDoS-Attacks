@@ -1,0 +1,4 @@
+Model,Accuracy %,CV Score %,Macro F1 %,Precision %,Recall %,Train Time(s),Pred Time(ms)
+Random Forest,95.28,95.49,95.28,95.28,95.28,0.67,70.1368
+KNN,96.36,96.41,96.35,96.41,96.36,0.06,135.1917
+SVM,95.46,95.41,95.5,95.85,95.46,23.66,951.3891
