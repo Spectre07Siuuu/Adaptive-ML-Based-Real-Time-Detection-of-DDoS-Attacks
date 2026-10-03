@@ -1,0 +1,2 @@
+session,attacks,blocked while attacking %,missed,median time to block (s),max time to block (s),attack traffic stopped % (mean),benign windows flagged %,benign clients blocked,false blocks,detector errors,socket kernel drops
+m1,13,100.0,0,1.13,1.75,94.5,0.0,0,0,0,0

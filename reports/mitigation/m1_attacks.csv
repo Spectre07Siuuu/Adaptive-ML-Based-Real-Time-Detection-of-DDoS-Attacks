@@ -1,0 +1,14 @@
+round,attacker,attack,rate,duration_s,status,time_to_block_s,blocked_share_%,packets_delivered,traffic_stopped_%
+1,10.0.0.21,icmp,high,32.6,blocked,1.44,91.9,20176,91.9
+2,10.0.0.23,syn,low,36.2,blocked,1.03,91.6,2768,91.7
+3,10.0.0.21,icmp,low,32.3,blocked,1.75,92.8,1101,93.0
+3,10.0.0.23,udp,low,32.3,blocked,1.75,92.8,1116,92.9
+4,10.0.0.23,icmp,medium,26.6,blocked,0.88,96.7,1596,96.2
+4,10.0.0.21,syn,medium,26.6,blocked,0.88,96.7,3203,96.2
+5,10.0.0.22,udp,high,29.2,blocked,1.1,96.2,9263,96.2
+6,10.0.0.22,udp,medium,24.6,blocked,1.65,93.3,2238,93.3
+7,10.0.0.21,udp,low,27.7,blocked,1.13,95.9,539,95.9
+8,10.0.0.23,syn,high,27.5,blocked,1.35,95.1,20241,95.1
+8,10.0.0.22,icmp,high,27.5,blocked,1.35,95.1,10516,95.1
+9,10.0.0.21,syn,medium,26.2,blocked,1.1,95.8,3307,95.8
+9,10.0.0.22,icmp,low,26.3,blocked,1.1,95.8,530,95.8

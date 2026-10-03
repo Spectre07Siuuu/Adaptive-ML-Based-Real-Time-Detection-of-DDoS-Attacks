@@ -18,7 +18,7 @@ The code has two pipelines:
 | 0 | Clean data and honest evaluation (prerequisite) | done: 3 lab sessions, baselines in reports/lab |
 | 1 | 02 Cross-dataset eval: lab + CIC-DDoS2019 + CIC-IDS2017 + Kaggle SDN | done: reports/cross_dataset |
 | 2 | 04 DL comparison: 1D-CNN, LSTM, Transformer vs RF/XGBoost | done: reports/models |
-| 3 | 03 Real-time closed-loop mitigation (OVS drop flows) | code done, live demo pending |
+| 3 | 03 Real-time closed-loop mitigation (OVS drop flows) | done: reports/mitigation |
 | 4 | 01 Adaptive pipeline: drift detection, online learning, novelty detection | todo |
 | 5 | 05 Deployment-ready architecture | todo |
 
@@ -272,6 +272,21 @@ sudo python3 -m ddos.lab.capture --session m1 --seed 11 --repeats 1 --detector
 Detector sessions are saved under `data/raw/pcap/mitigation/`, apart from the training
 captures. The evaluation reports, per attack, the seconds until the attacker was blocked, the
 share of its traffic that still reached the victim, and any benign client that was blocked.
+
+Live run, session m1 (seed 11, a schedule the model never saw; 13 attacks, 10 minutes):
+
+| Result | Value |
+|---|---|
+| Attacks blocked while running | 13 / 13 |
+| Time to block, median (max) | 1.13 s (1.75 s) |
+| Attack traffic stopped before reaching the victim | 94.5% on average (91.6–96.7%) |
+| Benign clients blocked / benign windows flagged | 0 / 0% |
+| Detector errors / packets dropped by the socket | 0 / 0 |
+
+The traffic that got through is the 1–2 s before each block. Two attacks outlasted the 30 s
+block and were blocked again (15 blocks for 13 attacks). The whole session's capture holds
+350k packets; a training session without the detector holds ~6M. Per-attack results are in
+`reports/mitigation/m1_attacks.csv`.
 
 Without root, `--replay <pcap> --dry-run` runs the detector over a recorded capture and logs
 the blocks it would install. Replaying lab session s3 (which the detector model has seen in
